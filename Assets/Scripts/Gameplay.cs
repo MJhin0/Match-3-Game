@@ -20,22 +20,28 @@ public class Gameplay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Get the component
         level = GetComponent<Gameplay>();
-        Vector2 location = tile.GetComponent<SpriteRenderer>().bounds.size;
+        //Tile dimensions (square)
+        Vector2 tileDimensions = tile.GetComponent<SpriteRenderer>().bounds.size;
         
-        drawBoard(location.x, location.y);
+        //Draw the board
+        drawBoard(tileDimensions.x);
     }
 
-    void drawBoard(float x, float y){
+    void drawBoard(float tileSideLength){
+        //Grid of objects
         tileGrid = new GameObject[sideLength, sideLength];
-        float initialX = transform.position.x - (x * sideLength / 2);
-        float initialY = transform.position.y - (y * sideLength / 2);
+        //Determine the position of [0, 0] so board is centered
+        float initialX = this.transform.position.x - (tileSideLength * sideLength / 2 - (tileSideLength / 2));
+        float initialY = this.transform.position.y - (tileSideLength * sideLength / 2 - (tileSideLength / 2));
 
+        //Render tiles and add to array
         for(int i = 0; i < sideLength; i++)
             for(int j = 0; j < sideLength; j++){
-                GameObject nextTile = Instantiate(tile, new Vector3(initialX + (x * i), initialY + 
-                    (y * j), 0), tile.transform.rotation); 
-                tileGrid[(int) x, (int) y] = nextTile;
+                GameObject nextTile = Instantiate(tile, new Vector3(initialX + (tileSideLength * i), initialY + 
+                    (tileSideLength * j), 0), tile.transform.rotation); 
+                tileGrid[i, j] = nextTile;
             }
     }
 
