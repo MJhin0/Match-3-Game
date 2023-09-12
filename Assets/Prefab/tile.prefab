@@ -94,6 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3238904812807084370}
   - component: {fileID: 5685080226515160731}
+  - component: {fileID: -5074894278331733310}
   m_Layer: 0
   m_Name: tile
   m_TagString: Untagged
@@ -169,3 +170,15 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-5074894278331733310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9161258274682096526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4916f117ac665d34d9e6d7e29ffded9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

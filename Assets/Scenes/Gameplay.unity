@@ -152,8 +152,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ce643b1eec376c48b185eeb7c364a47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: {fileID: 0}
-  tokenList: []
+  tokenList:
+  - {fileID: 6460429978780608995, guid: 7596fc84f211b1849a45ace0eff0e14e, type: 3}
+  - {fileID: 751054070690293933, guid: 7d2ee5fbb75648b4ea7452bb4af0450c, type: 3}
+  - {fileID: 8621850410695751517, guid: 679f212b37b5b374799be1cb2302dd48, type: 3}
+  - {fileID: 8079986151924947038, guid: f50fad698c3c9a24fbd853e8d356f255, type: 3}
+  - {fileID: 232724269841168492, guid: 9451fa68065553d4b8d41a556fbfbb07, type: 3}
+  - {fileID: 3819227294640086451, guid: c0b0cd7ba22f5464f846ddc49ba37f3d, type: 3}
   sideLength: 8
   tile: {fileID: 9161258274682096526, guid: 61f172ecd7ee6d842a7fc0b667659860, type: 3}
 --- !u!4 &1300501333
