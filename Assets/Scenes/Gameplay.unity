@@ -159,7 +159,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 69a79082ffdb95945bdd8947eb9b6e1a, type: 3}
   - {fileID: 21300000, guid: 8a1efba8bb3ff904c941995a0423e9aa, type: 3}
   - {fileID: 21300000, guid: 8ac6e95ef25d73d459318f8d5010f9e4, type: 3}
-  sideLength: 8
+  sideLength: 10
   tile: {fileID: 9161258274682096526, guid: 61f172ecd7ee6d842a7fc0b667659860, type: 3}
   token: {fileID: 5554968541051048798, guid: 33bc1663107a8b84ab578fec48e4ac98, type: 3}
 --- !u!4 &1300501333

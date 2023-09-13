@@ -11,10 +11,12 @@ public class Gameplay : MonoBehaviour
     //List of possible tokens
     public List<Sprite> tokenList = new List<Sprite>();
     //The board side length (assuming square board)
-    public int sideLength = 8;
+    public int sideLength;
     //Tile object and grid, plus token grid
     public GameObject tile;
     public GameObject token;
+    
+    //The game objects for the board
     private GameObject[,] tileGrid;
     private GameObject[,] tokenGrid;
 
@@ -25,42 +27,102 @@ public class Gameplay : MonoBehaviour
     {
         //Get the component
         level = GetComponent<Gameplay>();
-        //Tile dimensions (square)
-        Vector2 tileDimensions = tile.GetComponent<SpriteRenderer>().bounds.size;
         
         //Draw the board
-        drawBoard(tileDimensions.x);
+        drawBoard();
     }
 
-    void drawBoard(float tileSideLength){
-        //Grids of tiles and tokens
-        tileGrid = new GameObject[sideLength, sideLength];
+    void drawBoard(){
+        
+        //Get the tile dimensions (it's a square)
+        float tileSideLength = tile.GetComponent<SpriteRenderer>().bounds.size.x;
+
         tokenGrid = new GameObject[sideLength, sideLength];
         //Determine the position of [0, 0] so board is centered
         float initialX = this.transform.position.x - (tileSideLength * sideLength / 2 - (tileSideLength / 2));
         float initialY = this.transform.position.y - (tileSideLength * sideLength / 2 - (tileSideLength / 2));
 
-        //Render tiles and add to array
+        //Draw the tiles
+        instantiateTiles(tileSideLength, initialX, initialY);
+
+        //Draw the tokens
+        instantiateTokens(tileSideLength, initialX, initialY);
+        
+    }
+
+    void instantiateTiles(float tileSideLength, float initialX, float initialY){
+        tileGrid = new GameObject[sideLength, sideLength];
         for(int i = 0; i < sideLength; i++)
             for(int j = 0; j < sideLength; j++){
-
-                //Instantiate Tile Grid
+                //Instantiate and draw Tile Grid
                 GameObject nextTile = Instantiate(tile, new Vector3(initialX + (tileSideLength * i), initialY + 
                     (tileSideLength * j), 0), tile.transform.rotation);
                 nextTile.GetComponent<SpriteRenderer>().sortingOrder = 1;
                 tileGrid[i, j] = nextTile;
+            }
+    }
 
-                //Instantiate Tokens Randomly
+    void instantiateTokens(float tileSideLength, float initialX, float initialY){
+        
+        //SETUP FOR PREVENTING 3 IN A ROW
+        //The last element below or to the left to refer to
+        int[] lastColumn = new int[sideLength];
+        for(int i = 0; i < lastColumn.Length; i++) lastColumn[i] = -1;
+        int lastUnder = -1;
+
+        //Checks for if two in a row or column has happened
+        bool repeatedOnceVertical = false;
+        bool[] repeatedOnceHorizontal = new bool[sideLength];
+
+        //List of possible tokens, updates each iteration
+        List<int> allTokens = new List<int>();
+        for(int v = 0; v < tokenList.Count; v++) allTokens.Add(v);
+        List<int> allowedTokens = new List<int>();
+        allowedTokens.AddRange(allTokens);
+
+        //Render tokens
+        for(int i = 0; i < sideLength; i++){
+            lastUnder = -1;
+            repeatedOnceVertical = false;
+            for(int j = 0; j < sideLength; j++){
+
+                //Instantiate Tokens
                 GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * i), initialY + 
                     (tileSideLength * j), 0), token.transform.rotation);
-                //Determine token color and set sprite/int
-                int tokenType = Random.Range(0, tokenList.Count);
+
+                //Determine token color
+                //Remove from list if applicable
+                if(repeatedOnceVertical){
+                    allowedTokens.Remove(lastUnder);
+                    repeatedOnceVertical = false;
+                }
+                if(repeatedOnceHorizontal[j]){
+                    allowedTokens.Remove(lastColumn[j]);
+                    repeatedOnceHorizontal[j] = false;
+                }
+                
+                //Select token
+                int tokenType = allowedTokens[Random.Range(0, allowedTokens.Count)];
+
+                //Reset list to select from
+                allowedTokens = new List<int>();
+                allowedTokens.AddRange(allTokens);
+                //Check if it matches previous and mark as such
+                if(tokenType == lastUnder) repeatedOnceVertical = true;
+                if(tokenType == lastColumn[j]) repeatedOnceHorizontal[j] = true;
+                //Change lastUnder/lastColumn
+                lastUnder = tokenType;
+                lastColumn[j] = tokenType;
+
+                //Draw and add to array
                 nextToken.GetComponent<SpriteRenderer>().sprite = tokenList[tokenType];
                 nextToken.GetComponent<Token>().type = tokenType;
                 nextToken.GetComponent<SpriteRenderer>().sortingOrder = 2;
                 tokenGrid[i, j] = nextToken;
 
             }
+        }
+
     }
 
     // Update is called once per frame
