@@ -37,7 +37,6 @@ public class Gameplay : MonoBehaviour
         //Get the tile dimensions (it's a square)
         float tileSideLength = tile.GetComponent<SpriteRenderer>().bounds.size.x;
 
-        tokenGrid = new GameObject[sideLength, sideLength];
         //Determine the position of [0, 0] so board is centered
         float initialX = this.transform.position.x - (tileSideLength * sideLength / 2 - (tileSideLength / 2));
         float initialY = this.transform.position.y - (tileSideLength * sideLength / 2 - (tileSideLength / 2));
@@ -64,6 +63,7 @@ public class Gameplay : MonoBehaviour
 
     void instantiateTokens(float tileSideLength, float initialX, float initialY){
         
+        tokenGrid = new GameObject[sideLength, sideLength];
         //SETUP FOR PREVENTING 3 IN A ROW
         //The last element below or to the left to refer to
         int[] lastColumn = new int[sideLength];
