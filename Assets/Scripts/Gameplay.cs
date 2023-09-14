@@ -17,10 +17,10 @@ public class Gameplay : MonoBehaviour
     public GameObject token;
     
     //The game objects for the board
-    private GameObject[,] tileGrid;
-    private GameObject[,] tokenGrid;
+    public GameObject[,] tileGrid;
+    public GameObject[,] tokenGrid;
 
-    float swapSpeed = 5f;
+    public bool chainReactions;
 
     // Start is called before the first frame update
     void Start()
@@ -117,6 +117,7 @@ public class Gameplay : MonoBehaviour
                 //Draw and add to array
                 nextToken.GetComponent<SpriteRenderer>().sprite = tokenList[tokenType];
                 nextToken.GetComponent<Token>().type = tokenType;
+                nextToken.GetComponent<Token>().setIndex(i, j);
                 nextToken.GetComponent<SpriteRenderer>().sortingOrder = 2;
                 tokenGrid[i, j] = nextToken;
 

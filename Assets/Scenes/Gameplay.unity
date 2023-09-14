@@ -162,6 +162,8 @@ MonoBehaviour:
   sideLength: 10
   tile: {fileID: 9161258274682096526, guid: 61f172ecd7ee6d842a7fc0b667659860, type: 3}
   token: {fileID: 5554968541051048798, guid: 33bc1663107a8b84ab578fec48e4ac98, type: 3}
+  swapSpeed: 5
+  chainReactions: 0
 --- !u!4 &1300501333
 Transform:
   m_ObjectHideFlags: 0
