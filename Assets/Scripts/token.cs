@@ -62,19 +62,26 @@ public class Token : MonoBehaviour
     }
 
     public void SwapTokens(Token swappedToken){
-        //Return if they are the same color, no need to swap
-        if(token.type == swappedToken.type) return;
+        //Return if they are the same color or not adjacent, no need to swap
+        if(token.type == swappedToken.type || 
+            (Mathf.Abs(token.indexX - swappedToken.indexX) + Mathf.Abs(token.indexY - swappedToken.indexY) > 1)) {Debug.Log("too far"); return;}
 
-        //Swap in the token array
+        //Swap array positions in the Gameplay object
         GameObject temp = Gameplay.level.tokenGrid[token.indexX, token.indexY];
         Gameplay.level.tokenGrid[token.indexX, token.indexY] = Gameplay.level.tokenGrid[swappedToken.indexX, swappedToken.indexY];
-        Gameplay.level.tokenGrid[token.indexX, token.indexY] = temp;
+        Gameplay.level.tokenGrid[swappedToken.indexX, swappedToken.indexY] = temp;
+
+        //Swap array positions in the Token objects
+        int tempX = token.indexX;
+        int tempY = token.indexY;
+        token.setIndex(swappedToken.indexX, swappedToken.indexY);
+        swappedToken.setIndex(tempX, tempY);
 
         //Swap in physical location
         Vector3 position = Gameplay.level.tokenGrid[token.indexX, token.indexY].transform.position;
         Gameplay.level.tokenGrid[token.indexX, token.indexY].transform.position = Gameplay.level.tokenGrid[swappedToken.indexX, swappedToken.indexY].transform.position;
         Gameplay.level.tokenGrid[swappedToken.indexX, swappedToken.indexY].transform.position = position;
-        
+
     }
 
     // Update is called once per frame
