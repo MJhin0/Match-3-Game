@@ -59,7 +59,7 @@ public class Token : MonoBehaviour
                 SwapTokens(lastSelected);
                 findMatch();
                 lastSelected.findMatch();
-                lastSelected.Deselect();
+                if(lastSelected != null) lastSelected.Deselect();
             }
         }
     }
@@ -135,7 +135,7 @@ public class Token : MonoBehaviour
             else break;
         }
         //Check left
-        for(int i = indexX - 1; i < Gameplay.level.sideLength; i--){
+        for(int i = indexX - 1; i >= 0; i--){
             compare = Gameplay.level.tokenGrid[i, indexY].GetComponent<Token>();
             if(type == compare.type){
                 horizontalCount++;
@@ -154,11 +154,12 @@ public class Token : MonoBehaviour
     }
 
     private void destroyTokens(List<GameObject> tokens){
-        Debug.Log("Match");
         for(int i = 0; i < tokens.Count; i++){
-            Destroy(tokens[i]);
+            tokens[i].SetActive(false);
         }
-        Destroy(gameObject);
+        gameObject.SetActive(false);
+
+        Gameplay.level.destroyAndReplace();
         
     }
 

@@ -126,6 +126,32 @@ public class Gameplay : MonoBehaviour
 
     }
 
+    public void destroyAndReplace(){
+        for(int i = 0; i < sideLength; i++)
+            for(int j = 0; j < sideLength; j++){
+                if(!tokenGrid[i, j].activeSelf) {
+                    StartCoroutine(replace(i, j));
+                }
+            }
+    }
+
+    private IEnumerator replace(int x, int y){
+        chainReactions = true;
+
+        //Figure out how many shifts are needed
+        int emptyCount = 0;
+        for(int i = y; i < sideLength; i++)
+            if (!tokenGrid[x, i].activeSelf){
+                Destroy(tokenGrid[x, i]);
+                emptyCount++;
+            }
+        
+        Debug.Log(emptyCount);
+        yield return new WaitForSeconds(0.5f);
+
+        chainReactions = false;
+    }
+
     // Update is called once per frame
     void Update()
     {
