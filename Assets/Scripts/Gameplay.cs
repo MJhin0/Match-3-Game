@@ -15,6 +15,11 @@ public class Gameplay : MonoBehaviour
     //Tile object and grid, plus token grid
     public GameObject tile;
     public GameObject token;
+
+    //Variables to determine draw position
+    public float tileSideLength;
+    public float initialX;
+    public float initialY;
     
     //The game objects for the board
     public GameObject[,] tileGrid;
@@ -35,11 +40,11 @@ public class Gameplay : MonoBehaviour
     void drawBoard(){
         
         //Get the tile dimensions (it's a square)
-        float tileSideLength = tile.GetComponent<SpriteRenderer>().bounds.size.x;
+        tileSideLength = tile.GetComponent<SpriteRenderer>().bounds.size.x;
 
         //Determine the position of [0, 0] so board is centered
-        float initialX = this.transform.position.x - (tileSideLength * sideLength / 2 - (tileSideLength / 2));
-        float initialY = this.transform.position.y - (tileSideLength * sideLength / 2 - (tileSideLength / 2));
+        initialX = this.transform.position.x - (tileSideLength * sideLength / 2 - (tileSideLength / 2));
+        initialY = this.transform.position.y - (tileSideLength * sideLength / 2 - (tileSideLength / 2));
 
         //Draw the tiles
         instantiateTiles(tileSideLength, initialX, initialY);
@@ -148,6 +153,15 @@ public class Gameplay : MonoBehaviour
         
         Debug.Log(emptyCount);
         yield return new WaitForSeconds(0.5f);
+        
+        //Shift tokens down
+        // for(int i = 0; i < emptyCount; i++){
+        //     yield return new WaitForSeconds(0.5f);
+        //     for(int j = y + i; j < sideLength - 1; j++){
+        //         tokenGrid[x, j] = tokenGrid[x, j + 1];
+        //         tokenGrid[x, j + 1] = null;
+        //     }
+        // }
 
         chainReactions = false;
     }

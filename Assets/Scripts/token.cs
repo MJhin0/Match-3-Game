@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.Analytics;
+using Vector3 = UnityEngine.Vector3;
 
 public class Token : MonoBehaviour
 {
@@ -59,7 +61,6 @@ public class Token : MonoBehaviour
                 SwapTokens(lastSelected);
                 findMatch();
                 lastSelected.findMatch();
-                if(lastSelected != null) lastSelected.Deselect();
             }
         }
     }
@@ -81,10 +82,14 @@ public class Token : MonoBehaviour
         swappedToken.setIndex(tempX, tempY);
 
         //Swap in physical location
-        Vector3 position = Gameplay.level.tokenGrid[token.indexX, token.indexY].transform.position;
-        Gameplay.level.tokenGrid[token.indexX, token.indexY].transform.position = Gameplay.level.tokenGrid[swappedToken.indexX, swappedToken.indexY].transform.position;
-        Gameplay.level.tokenGrid[swappedToken.indexX, swappedToken.indexY].transform.position = position;
+        move();
+        swappedToken.move();
 
+    }
+
+    public void move(){
+        Gameplay.level.tokenGrid[indexX, indexY].transform.position = new Vector3(Gameplay.level.initialX + (Gameplay.level.tileSideLength * indexX), 
+            Gameplay.level.initialY + (Gameplay.level.tileSideLength * indexY), 0);
     }
 
     public void findMatch(){
@@ -151,6 +156,7 @@ public class Token : MonoBehaviour
 
         //Check if matched
         if(isMatch) destroyTokens(matched);
+        else if(token == lastSelected) Deselect();
     }
 
     private void destroyTokens(List<GameObject> tokens){
