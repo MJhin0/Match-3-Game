@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -56,6 +57,8 @@ public class Token : MonoBehaviour
             if(lastSelected == null) Select();
             else{
                 SwapTokens(lastSelected);
+                findMatch();
+                lastSelected.findMatch();
                 lastSelected.Deselect();
             }
         }
@@ -82,6 +85,81 @@ public class Token : MonoBehaviour
         Gameplay.level.tokenGrid[token.indexX, token.indexY].transform.position = Gameplay.level.tokenGrid[swappedToken.indexX, swappedToken.indexY].transform.position;
         Gameplay.level.tokenGrid[swappedToken.indexX, swappedToken.indexY].transform.position = position;
 
+    }
+
+    public void findMatch(){
+        Boolean isMatch = false;
+        //Lists to track what has been matched
+        List<GameObject> matched = new List<GameObject>();
+        List<GameObject> verticalMatched = new List<GameObject>();
+        List<GameObject> horizontalMatched = new List<GameObject>();
+
+        //Token to compare with
+        Token compare;
+
+        //Counts for what's matched
+        int verticalCount = 0;
+        int horizontalCount = 0;
+
+        //Check above
+        for(int i = indexY + 1; i < Gameplay.level.sideLength; i++){
+            compare = Gameplay.level.tokenGrid[indexX, i].GetComponent<Token>();
+            if(type == compare.type){
+                verticalCount++;
+                verticalMatched.Add(Gameplay.level.tokenGrid[indexX, i]);
+            }
+            else break;
+        }
+        //Check below
+        for(int i = indexY - 1; i >= 0; i--){
+            compare = Gameplay.level.tokenGrid[indexX, i].GetComponent<Token>();
+            if(type == compare.type){
+                verticalCount++;
+                verticalMatched.Add(Gameplay.level.tokenGrid[indexX, i]);
+            }
+            else break;
+        }
+        //Check if vertical match is made
+        if(verticalCount >= 2){
+            isMatch = true;
+            matched.AddRange(verticalMatched);
+        }
+
+        //Check right
+        for(int i = indexX + 1; i < Gameplay.level.sideLength; i++){
+            compare = Gameplay.level.tokenGrid[i, indexY].GetComponent<Token>();
+            if(type == compare.type){
+                horizontalCount++;
+                horizontalMatched.Add(Gameplay.level.tokenGrid[i, indexY]);
+            }
+            else break;
+        }
+        //Check left
+        for(int i = indexX - 1; i < Gameplay.level.sideLength; i--){
+            compare = Gameplay.level.tokenGrid[i, indexY].GetComponent<Token>();
+            if(type == compare.type){
+                horizontalCount++;
+                horizontalMatched.Add(Gameplay.level.tokenGrid[i, indexY]);
+            }
+            else break;
+        }
+        //Check if horizontal match is made
+        if(horizontalCount >= 2){
+            isMatch = true;
+            matched.AddRange(horizontalMatched);
+        }
+
+        //Check if matched
+        if(isMatch) destroyTokens(matched);
+    }
+
+    private void destroyTokens(List<GameObject> tokens){
+        Debug.Log("Match");
+        for(int i = 0; i < tokens.Count; i++){
+            Destroy(tokens[i]);
+        }
+        Destroy(gameObject);
+        
     }
 
     // Update is called once per frame
