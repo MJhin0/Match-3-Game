@@ -91,7 +91,9 @@ public class Token : MonoBehaviour
         swappedToken.move();
 
         //Check for matches
-        if(findMatch() || lastSelected.findMatch()) {
+        bool match1 = findMatch();
+        bool match2 = lastSelected.findMatch();
+        if(match1 || match2) {
             lastSelected.Deselect();
             Gameplay.level.destroyAndReplace();
         }else lastSelected.Deselect();
