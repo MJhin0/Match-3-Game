@@ -136,8 +136,16 @@ public class Gameplay : MonoBehaviour
             for(int j = 0; j < sideLength; j++){
                 if(!tokenGrid[i, j].activeSelf) {
                     StartCoroutine(replace(i, j));
+                    break;
                 }
             }
+        //After everything is refilled, check for matches again for combos
+        // bool matchExists = false;
+        // for(int i = 0; i < sideLength; i++)
+        //     for(int j = 0; j < sideLength; j++){
+        //         if(tokenGrid[i, j].GetComponent<Token>().findMatch()) matchExists = true;
+        //     }
+        //if(matchExists) destroyAndReplace();
     }
 
     private IEnumerator replace(int x, int y){
@@ -151,17 +159,26 @@ public class Gameplay : MonoBehaviour
                 emptyCount++;
             }
         
-        Debug.Log(emptyCount);
-        yield return new WaitForSeconds(0.5f);
-        
         //Shift tokens down
-        // for(int i = 0; i < emptyCount; i++){
-        //     yield return new WaitForSeconds(0.5f);
-        //     for(int j = y + i; j < sideLength - 1; j++){
-        //         tokenGrid[x, j] = tokenGrid[x, j + 1];
-        //         tokenGrid[x, j + 1] = null;
-        //     }
-        // }
+        for(int i = emptyCount; i > 0; i--){
+            //Delay for each tile moved down
+            yield return new WaitForSeconds(0.1f);
+            //Move the tokens down one
+            for(int j = y + i - 1; j < sideLength - 1; j++){
+                tokenGrid[x, j] = tokenGrid[x, j + 1];
+                tokenGrid[x, j].GetComponent<Token>().setIndex(x, j);
+                tokenGrid[x, j].GetComponent<Token>().move();
+            }
+            //Add token to top
+            GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * x), initialY + 
+                    (tileSideLength * (sideLength - 1)), 0), token.transform.rotation);
+            int tokenType = Random.Range(0, tokenList.Count);
+            nextToken.GetComponent<SpriteRenderer>().sprite = tokenList[tokenType];
+            nextToken.GetComponent<Token>().type = tokenType;
+            nextToken.GetComponent<Token>().setIndex(x, sideLength - 1);
+            nextToken.GetComponent<SpriteRenderer>().sortingOrder = 2;
+            tokenGrid[x, sideLength - 1] = nextToken;
+        }
 
         chainReactions = false;
     }

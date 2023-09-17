@@ -15,6 +15,7 @@ public class Token : MonoBehaviour
     public int indexX;
     public int indexY;
 
+    //Selection variables
     private Token token;
     private bool isSelected;
     private static Token lastSelected = null;
@@ -54,13 +55,12 @@ public class Token : MonoBehaviour
 
     //Selects/Deselects tokens
     void OnMouseDown() {
+        if(Gameplay.level.chainReactions) return;
         if(isSelected) Deselect();
         else{
             if(lastSelected == null) Select();
             else{
                 SwapTokens(lastSelected);
-                findMatch();
-                lastSelected.findMatch();
             }
         }
     }
@@ -68,7 +68,12 @@ public class Token : MonoBehaviour
     public void SwapTokens(Token swappedToken){
         //Return if they are the same color or not adjacent, no need to swap
         if(token.type == swappedToken.type || 
-            (Mathf.Abs(token.indexX - swappedToken.indexX) + Mathf.Abs(token.indexY - swappedToken.indexY) > 1)) {Debug.Log("too far"); return;}
+            (Mathf.Abs(token.indexX - swappedToken.indexX) + Mathf.Abs(token.indexY - swappedToken.indexY) > 1)) {
+                Debug.Log("too far");
+                lastSelected.Deselect();
+                Select();
+                return;
+            }
 
         //Swap array positions in the Gameplay object
         GameObject temp = Gameplay.level.tokenGrid[token.indexX, token.indexY];
@@ -85,6 +90,12 @@ public class Token : MonoBehaviour
         move();
         swappedToken.move();
 
+        //Check for matches
+        if(findMatch() || lastSelected.findMatch()) {
+            lastSelected.Deselect();
+            Gameplay.level.destroyAndReplace();
+        }else lastSelected.Deselect();
+
     }
 
     public void move(){
@@ -92,12 +103,12 @@ public class Token : MonoBehaviour
             Gameplay.level.initialY + (Gameplay.level.tileSideLength * indexY), 0);
     }
 
-    public void findMatch(){
-        Boolean isMatch = false;
+    public bool findMatch(){
         //Lists to track what has been matched
         List<GameObject> matched = new List<GameObject>();
         List<GameObject> verticalMatched = new List<GameObject>();
         List<GameObject> horizontalMatched = new List<GameObject>();
+        bool isMatch = false;
 
         //Token to compare with
         Token compare;
@@ -156,7 +167,7 @@ public class Token : MonoBehaviour
 
         //Check if matched
         if(isMatch) destroyTokens(matched);
-        else if(token == lastSelected) Deselect();
+        return isMatch;
     }
 
     private void destroyTokens(List<GameObject> tokens){
@@ -164,9 +175,6 @@ public class Token : MonoBehaviour
             tokens[i].SetActive(false);
         }
         gameObject.SetActive(false);
-
-        Gameplay.level.destroyAndReplace();
-        
     }
 
     // Update is called once per frame
