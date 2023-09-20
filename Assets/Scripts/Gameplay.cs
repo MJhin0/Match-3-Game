@@ -25,7 +25,9 @@ public class Gameplay : MonoBehaviour
     public GameObject[,] tileGrid;
     public GameObject[,] tokenGrid;
 
-    public bool chainReactions;
+    //Used when matches are made
+    public int chainReactions = 0;
+    public int columnsMoving = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -131,30 +133,43 @@ public class Gameplay : MonoBehaviour
 
     }
 
-    public void destroyAndReplace(){
+    public IEnumerator destroyAndReplace(){
+        chainReactions++;
+        columnsMoving = 0;
         for(int i = 0; i < sideLength; i++)
             for(int j = 0; j < sideLength; j++){
-                if(!tokenGrid[i, j].activeSelf) {
+                if(tokenGrid[i, j].GetComponent<Token>().marked) {
+                    columnsMoving++;
                     StartCoroutine(replace(i, j));
                     break;
                 }
             }
+
+        //Wait until columns are done moving
+        //while(columnsMoving > 0){}
+        while(columnsMoving > 0) {Debug.Log(columnsMoving); yield return new WaitForSeconds(0.0f);}
+
+        //yield return new WaitUntil(() => columnsMoving <= 0);
+
+        Debug.Log("Finish");
+        yield return new WaitForSeconds(1.0f);
+
         //After everything is refilled, check for matches again for combos
-        // bool matchExists = false;
-        // for(int i = 0; i < sideLength; i++)
-        //     for(int j = 0; j < sideLength; j++){
-        //         if(tokenGrid[i, j].GetComponent<Token>().findMatch()) matchExists = true;
-        //     }
-        //if(matchExists) destroyAndReplace();
+        bool matchExists = false;
+        for(int i = 0; i < sideLength; i++)
+            for(int j = 0; j < sideLength; j++){
+                if(tokenGrid[i, j].GetComponent<Token>().findMatch()) matchExists = true;
+            }
+        if(matchExists) StartCoroutine(destroyAndReplace());
+        chainReactions--;
     }
 
     private IEnumerator replace(int x, int y){
-        chainReactions = true;
 
         //Figure out how many shifts are needed
         int emptyCount = 0;
         for(int i = y; i < sideLength; i++)
-            if (!tokenGrid[x, i].activeSelf){
+            if (tokenGrid[x, i].GetComponent<Token>().marked){
                 Destroy(tokenGrid[x, i]);
                 emptyCount++;
             }
@@ -180,7 +195,7 @@ public class Gameplay : MonoBehaviour
             tokenGrid[x, sideLength - 1] = nextToken;
         }
 
-        chainReactions = false;
+        columnsMoving--;
     }
 
     // Update is called once per frame

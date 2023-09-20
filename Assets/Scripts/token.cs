@@ -14,6 +14,7 @@ public class Token : MonoBehaviour
     public int type;
     public int indexX;
     public int indexY;
+    public bool marked = false;
 
     //Selection variables
     private Token token;
@@ -55,7 +56,7 @@ public class Token : MonoBehaviour
 
     //Selects/Deselects tokens
     void OnMouseDown() {
-        if(Gameplay.level.chainReactions) return;
+        if(Gameplay.level.chainReactions > 0) return;
         if(isSelected) Deselect();
         else{
             if(lastSelected == null) Select();
@@ -95,7 +96,7 @@ public class Token : MonoBehaviour
         bool match2 = lastSelected.findMatch();
         if(match1 || match2) {
             lastSelected.Deselect();
-            Gameplay.level.destroyAndReplace();
+            StartCoroutine(Gameplay.level.destroyAndReplace());
         }else lastSelected.Deselect();
 
     }
@@ -174,9 +175,9 @@ public class Token : MonoBehaviour
 
     private void destroyTokens(List<GameObject> tokens){
         for(int i = 0; i < tokens.Count; i++){
-            tokens[i].SetActive(false);
+            tokens[i].GetComponent<Token>().marked = true;
         }
-        gameObject.SetActive(false);
+        marked = true;
     }
 
     // Update is called once per frame
