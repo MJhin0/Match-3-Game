@@ -167,22 +167,42 @@ public class Gameplay : MonoBehaviour
 
         //Figure out how many shifts are needed
         int emptyCount = 0;
+        //List of distances tokens
+        List<int> distances = new List<int>();
         for(int i = y; i < sideLength; i++)
-            if (tokenGrid[x, i].GetComponent<Token>().marked){
+            if (tokenGrid[x, i].GetComponent<Token>().marked){ //destory marked tokens, increment empty count
                 Destroy(tokenGrid[x, i]);
                 tokenGrid[x, i] = null;
                 emptyCount++;
+            }
+            else{ //Add this token's drop distance to the list
+                distances.Add(emptyCount);
             }
                     
         //Shift tokens down
         for(int i = emptyCount; i > 0; i--){
             //Delay for each tile moved down
             yield return new WaitForSeconds(0.1f);
+            //Keep track/reset of the index in the distance list
+            int distIndex = 0;
             //Move the tokens down one
-            for(int j = y + i - 1; j < sideLength - 1; j++){
-                tokenGrid[x, j] = tokenGrid[x, j + 1];
-                tokenGrid[x, j].GetComponent<Token>().setIndex(x, j);
-                tokenGrid[x, j].GetComponent<Token>().move();
+            for(int j = y - 1; j < sideLength - 1; j++){
+                //Only act if the token to fall is actually there
+                if(tokenGrid[x, j + 1] != null){
+                    //Only act if this token should fall
+                    Debug.Log(distIndex);
+                    if(distances[distIndex] > 0){
+                        tokenGrid[x, j] = tokenGrid[x, j + 1];
+                        tokenGrid[x, j].GetComponent<Token>().setIndex(x, j);
+                        tokenGrid[x, j].GetComponent<Token>().move();
+                        tokenGrid[x, j + 1] = null;
+                        //Decrement distance, incrememtn index
+                        distances[distIndex]--;
+                        distIndex++;
+                    }
+                    //Otherwise move to next index
+                    else {distIndex++; Debug.Log("increment");}
+                }
             }
             //Add token to top
             GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * x), initialY + 
@@ -193,6 +213,9 @@ public class Gameplay : MonoBehaviour
             nextToken.GetComponent<Token>().setIndex(x, sideLength - 1);
             nextToken.GetComponent<SpriteRenderer>().sortingOrder = 2;
             tokenGrid[x, sideLength - 1] = nextToken;
+            //Add new token to list of distances
+            distances.Add(i - 1);
+            Debug.Log(distances.Count);
         }
 
         columnsMoving--;
