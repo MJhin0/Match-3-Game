@@ -10,8 +10,9 @@ public class Gameplay : MonoBehaviour
     public static Gameplay level;
     //List of possible tokens
     public List<Sprite> tokenList = new List<Sprite>();
-    //The board side length (assuming square board)
-    public int sideLength;
+    //The board dimensions (assuming square board)
+    public int sideLengthX;
+    public int sideLengthY;
     //Tile object and grid, plus token grid
     public GameObject tile;
     public GameObject token;
@@ -45,8 +46,8 @@ public class Gameplay : MonoBehaviour
         tileSideLength = tile.GetComponent<SpriteRenderer>().bounds.size.x;
 
         //Determine the position of [0, 0] so board is centered
-        initialX = this.transform.position.x - (tileSideLength * sideLength / 2 - (tileSideLength / 2));
-        initialY = this.transform.position.y - (tileSideLength * sideLength / 2 - (tileSideLength / 2));
+        initialX = this.transform.position.x - (tileSideLength * sideLengthX / 2 - (tileSideLength / 2));
+        initialY = this.transform.position.y - (tileSideLength * sideLengthY / 2 - (tileSideLength / 2));
 
         //Draw the tiles
         instantiateTiles(tileSideLength, initialX, initialY);
@@ -57,12 +58,13 @@ public class Gameplay : MonoBehaviour
     }
 
     void instantiateTiles(float tileSideLength, float initialX, float initialY){
-        tileGrid = new GameObject[sideLength, sideLength];
-        for(int i = 0; i < sideLength; i++)
-            for(int j = 0; j < sideLength; j++){
+        tileGrid = new GameObject[sideLengthX, sideLengthY];
+        for(int i = 0; i < sideLengthX; i++)
+            for(int j = 0; j < sideLengthY; j++){
                 //Instantiate and draw Tile Grid
                 GameObject nextTile = Instantiate(tile, new Vector3(initialX + (tileSideLength * i), initialY + 
                     (tileSideLength * j), 0), tile.transform.rotation);
+                    nextTile.transform.parent = level.transform;
                 nextTile.GetComponent<SpriteRenderer>().sortingOrder = 1;
                 tileGrid[i, j] = nextTile;
             }
@@ -70,16 +72,16 @@ public class Gameplay : MonoBehaviour
 
     void instantiateTokens(float tileSideLength, float initialX, float initialY){
         
-        tokenGrid = new GameObject[sideLength, sideLength];
+        tokenGrid = new GameObject[sideLengthX, sideLengthY];
         //SETUP FOR PREVENTING 3 IN A ROW
         //The last element below or to the left to refer to
-        int[] lastColumn = new int[sideLength];
+        int[] lastColumn = new int[sideLengthY];
         for(int i = 0; i < lastColumn.Length; i++) lastColumn[i] = -1;
         int lastUnder = -1;
 
         //Checks for if two in a row or column has happened
         bool repeatedOnceVertical = false;
-        bool[] repeatedOnceHorizontal = new bool[sideLength];
+        bool[] repeatedOnceHorizontal = new bool[sideLengthY];
 
         //List of possible tokens, updates each iteration
         List<int> allTokens = new List<int>();
@@ -88,10 +90,10 @@ public class Gameplay : MonoBehaviour
         allowedTokens.AddRange(allTokens);
 
         //Render tokens
-        for(int i = 0; i < sideLength; i++){
+        for(int i = 0; i < sideLengthX; i++){
             lastUnder = -1;
             repeatedOnceVertical = false;
-            for(int j = 0; j < sideLength; j++){
+            for(int j = 0; j < sideLengthY; j++){
 
                 //Instantiate Tokens
                 GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * i), initialY + 
@@ -126,6 +128,7 @@ public class Gameplay : MonoBehaviour
                 nextToken.GetComponent<Token>().type = tokenType;
                 nextToken.GetComponent<Token>().setIndex(i, j);
                 nextToken.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                nextToken.transform.parent = level.transform;
                 tokenGrid[i, j] = nextToken;
 
             }
@@ -140,8 +143,8 @@ public class Gameplay : MonoBehaviour
     public IEnumerator destroyAndReplace(){
         chainReactions++;
         columnsMoving = 0;
-        for(int i = 0; i < sideLength; i++)
-            for(int j = 0; j < sideLength; j++){
+        for(int i = 0; i < sideLengthX; i++)
+            for(int j = 0; j < sideLengthY; j++){
                 if(tokenGrid[i, j].GetComponent<Token>().marked) {
                     columnsMoving++;
                     StartCoroutine(replace(i, j));
@@ -155,8 +158,8 @@ public class Gameplay : MonoBehaviour
 
         //After everything is refilled, check for matches again for combos
         bool matchExists = false;
-        for(int i = 0; i < sideLength; i++)
-            for(int j = 0; j < sideLength; j++){
+        for(int i = 0; i < sideLengthX; i++)
+            for(int j = 0; j < sideLengthY; j++){
                 if(tokenGrid[i, j].GetComponent<Token>().findMatch()) matchExists = true;
             }
         if(matchExists) StartCoroutine(destroyAndReplace());
@@ -169,7 +172,7 @@ public class Gameplay : MonoBehaviour
         int emptyCount = 0;
         //List of distances tokens
         List<int> distances = new List<int>();
-        for(int i = y; i < sideLength; i++)
+        for(int i = y; i < sideLengthY; i++)
             if (tokenGrid[x, i].GetComponent<Token>().marked){ //destory marked tokens, increment empty count
                 Destroy(tokenGrid[x, i]);
                 tokenGrid[x, i] = null;
@@ -186,11 +189,10 @@ public class Gameplay : MonoBehaviour
             //Keep track/reset of the index in the distance list
             int distIndex = 0;
             //Move the tokens down one
-            for(int j = y - 1; j < sideLength - 1; j++){
+            for(int j = y - 1; j < sideLengthY - 1; j++){
                 //Only act if the token to fall is actually there
                 if(tokenGrid[x, j + 1] != null){
                     //Only act if this token should fall
-                    Debug.Log(distIndex);
                     if(distances[distIndex] > 0){
                         tokenGrid[x, j] = tokenGrid[x, j + 1];
                         tokenGrid[x, j].GetComponent<Token>().setIndex(x, j);
@@ -201,21 +203,21 @@ public class Gameplay : MonoBehaviour
                         distIndex++;
                     }
                     //Otherwise move to next index
-                    else {distIndex++; Debug.Log("increment");}
+                    else distIndex++;
                 }
             }
             //Add token to top
             GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * x), initialY + 
-                    (tileSideLength * (sideLength - 1)), 0), token.transform.rotation);
+                    (tileSideLength * (sideLengthY - 1)), 0), token.transform.rotation);
             int tokenType = Random.Range(0, tokenList.Count);
             nextToken.GetComponent<SpriteRenderer>().sprite = tokenList[tokenType];
             nextToken.GetComponent<Token>().type = tokenType;
-            nextToken.GetComponent<Token>().setIndex(x, sideLength - 1);
+            nextToken.GetComponent<Token>().setIndex(x, sideLengthY - 1);
             nextToken.GetComponent<SpriteRenderer>().sortingOrder = 2;
-            tokenGrid[x, sideLength - 1] = nextToken;
+            nextToken.transform.parent = level.transform;
+            tokenGrid[x, sideLengthY - 1] = nextToken;
             //Add new token to list of distances
             distances.Add(i - 1);
-            Debug.Log(distances.Count);
         }
 
         columnsMoving--;

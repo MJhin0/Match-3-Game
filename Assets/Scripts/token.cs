@@ -121,7 +121,7 @@ public class Token : MonoBehaviour
         int horizontalCount = 0;
 
         //Check above
-        for(int i = indexY + 1; i < Gameplay.level.sideLength; i++){
+        for(int i = indexY + 1; i < Gameplay.level.sideLengthY; i++){
             compare = Gameplay.level.tokenGrid[indexX, i].GetComponent<Token>();
             if(type == compare.type){
                 verticalCount++;
@@ -145,7 +145,7 @@ public class Token : MonoBehaviour
         }
 
         //Check right
-        for(int i = indexX + 1; i < Gameplay.level.sideLength; i++){
+        for(int i = indexX + 1; i < Gameplay.level.sideLengthX; i++){
             compare = Gameplay.level.tokenGrid[i, indexY].GetComponent<Token>();
             if(type == compare.type){
                 horizontalCount++;
