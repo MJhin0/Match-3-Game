@@ -151,12 +151,12 @@ public class Gameplay : MonoBehaviour
 
         //Wait until columns are done moving
         //while(columnsMoving > 0){}
-        while(columnsMoving > 0) {Debug.Log(columnsMoving); yield return new WaitForSeconds(0.0f);}
+        yield return new WaitUntil(() => columnsMoving <= 0);
 
         //yield return new WaitUntil(() => columnsMoving <= 0);
 
         Debug.Log("Finish");
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.5f);
 
         //After everything is refilled, check for matches again for combos
         bool matchExists = false;
