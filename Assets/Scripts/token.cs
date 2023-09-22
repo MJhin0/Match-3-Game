@@ -70,7 +70,6 @@ public class Token : MonoBehaviour
         //Return if they are the same color or not adjacent, no need to swap
         if(token.type == swappedToken.type || 
             (Mathf.Abs(token.indexX - swappedToken.indexX) + Mathf.Abs(token.indexY - swappedToken.indexY) > 1)) {
-                Debug.Log("too far");
                 lastSelected.Deselect();
                 Select();
                 return;
