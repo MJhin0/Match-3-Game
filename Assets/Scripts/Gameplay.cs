@@ -167,7 +167,7 @@ public class Gameplay : MonoBehaviour
 
         //Figure out how many shifts are needed
         int emptyCount = 0;
-                for(int i = y; i < sideLength; i++)
+        for(int i = y; i < sideLength; i++)
             if (tokenGrid[x, i].GetComponent<Token>().marked){
                 Destroy(tokenGrid[x, i]);
                 tokenGrid[x, i] = null;
@@ -176,14 +176,14 @@ public class Gameplay : MonoBehaviour
                     
         //Shift tokens down
         for(int i = emptyCount; i > 0; i--){
-                        //Delay for each tile moved down
+            //Delay for each tile moved down
             yield return new WaitForSeconds(0.1f);
             //Move the tokens down one
             for(int j = y + i - 1; j < sideLength - 1; j++){
-                                    tokenGrid[x, j] = tokenGrid[x, j + 1];
-                    tokenGrid[x, j].GetComponent<Token>().setIndex(x, j);
-                    tokenGrid[x, j].GetComponent<Token>().move();
-                                }
+                tokenGrid[x, j] = tokenGrid[x, j + 1];
+                tokenGrid[x, j].GetComponent<Token>().setIndex(x, j);
+                tokenGrid[x, j].GetComponent<Token>().move();
+            }
             //Add token to top
             GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * x), initialY + 
                     (tileSideLength * (sideLength - 1)), 0), token.transform.rotation);
@@ -193,7 +193,7 @@ public class Gameplay : MonoBehaviour
             nextToken.GetComponent<Token>().setIndex(x, sideLength - 1);
             nextToken.GetComponent<SpriteRenderer>().sortingOrder = 2;
             tokenGrid[x, sideLength - 1] = nextToken;
-                    }
+        }
 
         columnsMoving--;
     }
