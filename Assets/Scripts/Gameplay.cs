@@ -133,6 +133,10 @@ public class Gameplay : MonoBehaviour
 
     }
 
+    public void executeMatch(){
+        StartCoroutine(destroyAndReplace());
+    }
+
     public IEnumerator destroyAndReplace(){
         chainReactions++;
         columnsMoving = 0;
