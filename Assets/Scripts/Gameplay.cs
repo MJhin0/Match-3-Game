@@ -26,6 +26,10 @@ public class Gameplay : MonoBehaviour
     public GameObject[,] tileGrid;
     public GameObject[,] tokenGrid;
 
+    //Total tiles to break;
+    public int tileCount = 0;
+    public int tilesCleared = 0;
+
     //Used when matches are made
     public int chainReactions = 0;
     public int columnsMoving = 0;
@@ -66,7 +70,9 @@ public class Gameplay : MonoBehaviour
                     (tileSideLength * j), 0), tile.transform.rotation);
                     nextTile.transform.parent = level.transform;
                 nextTile.GetComponent<SpriteRenderer>().sortingOrder = 1;
+                nextTile.GetComponent<Tile>().setTileLayer(1);
                 tileGrid[i, j] = nextTile;
+                tileCount++;
             }
     }
 
@@ -164,6 +170,7 @@ public class Gameplay : MonoBehaviour
             }
         if(matchExists) StartCoroutine(destroyAndReplace());
         chainReactions--;
+        if(tileCount == tilesCleared) Debug.Log("Clear!");
     }
 
     private IEnumerator replace(int x, int y){
@@ -173,8 +180,9 @@ public class Gameplay : MonoBehaviour
         //List of distances tokens
         List<int> distances = new List<int>();
         for(int i = y; i < sideLengthY; i++)
-            if (tokenGrid[x, i].GetComponent<Token>().marked){ //destory marked tokens, increment empty count
+            if (tokenGrid[x, i].GetComponent<Token>().marked){ //destory marked tokens, increment empty count, break tile under
                 Destroy(tokenGrid[x, i]);
+                tileGrid[x, i].GetComponent<Tile>().breakLayer();
                 tokenGrid[x, i] = null;
                 emptyCount++;
             }

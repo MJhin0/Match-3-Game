@@ -166,6 +166,8 @@ MonoBehaviour:
   tileSideLength: 0
   initialX: 0
   initialY: 0
+  tileCount: 0
+  tilesCleared: 0
   chainReactions: 0
   columnsMoving: 0
 --- !u!4 &1300501333
