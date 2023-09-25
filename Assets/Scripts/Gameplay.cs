@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using Unity.VisualScripting;
+using Unity.VisualScripting.AssemblyQualifiedNameParser;
 using UnityEngine;
 
 public class Gameplay : MonoBehaviour
@@ -22,7 +25,8 @@ public class Gameplay : MonoBehaviour
     public float initialX;
     public float initialY;
     
-    //The game objects for the board
+    //The game objects for the board and text file path
+    public String filePath = "Assets/levels/1_1.txt";
     public GameObject[,] tileGrid;
     public GameObject[,] tokenGrid;
 
@@ -45,6 +49,21 @@ public class Gameplay : MonoBehaviour
     }
 
     void drawBoard(){
+
+        //Open the text file and get dimensions
+        StreamReader fileRead = new StreamReader(filePath);
+        String[] dimensions = fileRead.ReadLine().Split(' ');
+        sideLengthX = int.Parse(dimensions[0]);
+        sideLengthY = int.Parse(dimensions[1]);
+        
+        //Buffer file input
+        fileRead.ReadLine();
+        //Create Board of ints
+        int[,] board = new int[sideLengthX, sideLengthY];
+        for(int i = sideLengthX - 1; i >= 0; i--){
+            String line = fileRead.ReadLine();
+            for(int j = 0; j < sideLengthY; j++) board[i, j] = int.Parse(line[j].ToString());
+        }
         
         //Get the tile dimensions (it's a square)
         tileSideLength = tile.GetComponent<SpriteRenderer>().bounds.size.x;
@@ -54,17 +73,19 @@ public class Gameplay : MonoBehaviour
         initialY = this.transform.position.y - (tileSideLength * sideLengthY / 2 - (tileSideLength / 2));
 
         //Draw the tiles
-        instantiateTiles(tileSideLength, initialX, initialY);
+        instantiateTiles(tileSideLength, initialX, initialY, board);
 
         //Draw the tokens
         instantiateTokens(tileSideLength, initialX, initialY);
         
     }
 
-    void instantiateTiles(float tileSideLength, float initialX, float initialY){
+    void instantiateTiles(float tileSideLength, float initialX, float initialY, int[,] board){
         tileGrid = new GameObject[sideLengthX, sideLengthY];
-        for(int i = 0; i < sideLengthX; i++)
+        for(int i = 0; i < sideLengthX; i++){
             for(int j = 0; j < sideLengthY; j++){
+                //Get the character from grid, skip if 0
+                if(board[i, j] == 0) continue;
                 //Instantiate and draw Tile Grid
                 GameObject nextTile = Instantiate(tile, new Vector3(initialX + (tileSideLength * i), initialY + 
                     (tileSideLength * j), 0), tile.transform.rotation);
@@ -74,6 +95,7 @@ public class Gameplay : MonoBehaviour
                 tileGrid[i, j] = nextTile;
                 tileCount++;
             }
+        }
     }
 
     void instantiateTokens(float tileSideLength, float initialX, float initialY){
@@ -100,6 +122,8 @@ public class Gameplay : MonoBehaviour
             lastUnder = -1;
             repeatedOnceVertical = false;
             for(int j = 0; j < sideLengthY; j++){
+                //Skip if no tile
+                if(tileGrid[i, j] == null) continue;
 
                 //Instantiate Tokens
                 GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * i), initialY + 
@@ -117,7 +141,7 @@ public class Gameplay : MonoBehaviour
                 }
                 
                 //Select token
-                int tokenType = allowedTokens[Random.Range(0, allowedTokens.Count)];
+                int tokenType = allowedTokens[UnityEngine.Random.Range(0, allowedTokens.Count)];
 
                 //Reset list to select from
                 allowedTokens = new List<int>();
@@ -217,7 +241,7 @@ public class Gameplay : MonoBehaviour
             //Add token to top
             GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * x), initialY + 
                     (tileSideLength * (sideLengthY - 1)), 0), token.transform.rotation);
-            int tokenType = Random.Range(0, tokenList.Count);
+            int tokenType = UnityEngine.Random.Range(0, tokenList.Count);
             nextToken.GetComponent<SpriteRenderer>().sprite = tokenList[tokenType];
             nextToken.GetComponent<Token>().type = tokenType;
             nextToken.GetComponent<Token>().setIndex(x, sideLengthY - 1);
