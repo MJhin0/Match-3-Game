@@ -122,6 +122,8 @@ public class Token : MonoBehaviour
 
         //Check above
         for(int i = indexY + 1; i < Gameplay.level.sideLengthY; i++){
+            //Stop tracking if a no tile spot is hit before the board side
+            if(Gameplay.level.tileGrid[indexX, i] == null) break;
             compare = Gameplay.level.tokenGrid[indexX, i].GetComponent<Token>();
             if(type == compare.type){
                 verticalCount++;
@@ -131,6 +133,8 @@ public class Token : MonoBehaviour
         }
         //Check below
         for(int i = indexY - 1; i >= 0; i--){
+            //Stop tracking if a no tile spot is hit before the board side
+            if(Gameplay.level.tileGrid[indexX, i] == null) break;
             compare = Gameplay.level.tokenGrid[indexX, i].GetComponent<Token>();
             if(type == compare.type){
                 verticalCount++;
@@ -146,6 +150,8 @@ public class Token : MonoBehaviour
 
         //Check right
         for(int i = indexX + 1; i < Gameplay.level.sideLengthX; i++){
+            //Stop tracking if a no tile spot is hit before the board side
+            if(Gameplay.level.tileGrid[i, indexY] == null) break;
             compare = Gameplay.level.tokenGrid[i, indexY].GetComponent<Token>();
             if(type == compare.type){
                 horizontalCount++;
@@ -155,6 +161,8 @@ public class Token : MonoBehaviour
         }
         //Check left
         for(int i = indexX - 1; i >= 0; i--){
+            //Stop tracking if a no tile spot is hit before the board side
+            if(Gameplay.level.tileGrid[i, indexY] == null) break;
             compare = Gameplay.level.tokenGrid[i, indexY].GetComponent<Token>();
             if(type == compare.type){
                 horizontalCount++;

@@ -175,6 +175,8 @@ public class Gameplay : MonoBehaviour
         columnsMoving = 0;
         for(int i = 0; i < sideLengthX; i++)
             for(int j = 0; j < sideLengthY; j++){
+                //Skip if no tile there
+                if(tileGrid[i, j] == null) continue;
                 if(tokenGrid[i, j].GetComponent<Token>().marked) {
                     columnsMoving++;
                     StartCoroutine(replace(i, j));
@@ -190,6 +192,8 @@ public class Gameplay : MonoBehaviour
         bool matchExists = false;
         for(int i = 0; i < sideLengthX; i++)
             for(int j = 0; j < sideLengthY; j++){
+                //Skip if no tile there
+                if(tileGrid[i, j] == null) continue;
                 if(tokenGrid[i, j].GetComponent<Token>().findMatch()) matchExists = true;
             }
         if(matchExists) StartCoroutine(destroyAndReplace());
