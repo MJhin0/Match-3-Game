@@ -171,6 +171,7 @@ public class Gameplay : MonoBehaviour
     }
 
     public IEnumerator destroyAndReplace(){
+        yield return new WaitUntil(() => Token.tokensMoving <= 0);
         chainReactions++;
         columnsMoving = 0;
         for(int i = 0; i < sideLengthX; i++)

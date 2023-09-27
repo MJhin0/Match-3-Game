@@ -23,6 +23,11 @@ public class Token : MonoBehaviour
     private static Color selectFade = new Color(1f, 1f, 1f, 0.5f);
     private static Color deselectFade = new Color(1f, 1f, 1f, 1f);
 
+    //Variables for determine if a token is in motion
+    private bool isMoving = false;
+    public static int tokensMoving = 0;
+    private Vector3 intendedPosition;
+
     // Start is called before the first frame update
     void Start()
     {
