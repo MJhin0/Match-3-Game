@@ -60,9 +60,9 @@ public class Gameplay : MonoBehaviour
         fileRead.ReadLine();
         //Create Board of ints
         int[,] board = new int[sideLengthX, sideLengthY];
-        for(int i = sideLengthX - 1; i >= 0; i--){
+        for(int i = sideLengthY - 1; i >= 0; i--){
             String line = fileRead.ReadLine();
-            for(int j = 0; j < sideLengthY; j++) board[i, j] = int.Parse(line[j].ToString());
+            for(int j = 0; j < sideLengthX; j++) board[j, i] = int.Parse(line[j].ToString());
         }
         
         //Get the tile dimensions (it's a square)
@@ -207,7 +207,11 @@ public class Gameplay : MonoBehaviour
         int emptyCount = 0;
         //List of distances tokens
         List<int> distances = new List<int>();
-        for(int i = y; i < sideLengthY; i++)
+        //Highest index tile in the column
+        int highestIndex = 0;
+        //Destroy tokens and determine drop counts
+        for(int i = y; i < sideLengthY; i++){
+            if(tileGrid[x, i] != null) highestIndex = i; else continue;
             if (tokenGrid[x, i].GetComponent<Token>().marked){ //destory marked tokens, increment empty count, break tile under
                 Destroy(tokenGrid[x, i]);
                 tileGrid[x, i].GetComponent<Tile>().breakLayer();
@@ -217,6 +221,7 @@ public class Gameplay : MonoBehaviour
             else{ //Add this token's drop distance to the list
                 distances.Add(emptyCount);
             }
+        }
                     
         //Shift tokens down
         for(int i = emptyCount; i > 0; i--){
@@ -225,14 +230,22 @@ public class Gameplay : MonoBehaviour
             //Keep track/reset of the index in the distance list
             int distIndex = 0;
             //Move the tokens down one
-            for(int j = y - 1; j < sideLengthY - 1; j++){
+            for(int j = y - 1; j < highestIndex; j++){
                 //Only act if the token to fall is actually there
                 if(tokenGrid[x, j + 1] != null){
                     //Only act if this token should fall
                     if(distances[distIndex] > 0){
-                        tokenGrid[x, j] = tokenGrid[x, j + 1];
-                        tokenGrid[x, j].GetComponent<Token>().setIndex(x, j);
-                        tokenGrid[x, j].GetComponent<Token>().move();
+
+                        //Account for no tile space to fall through
+                        int nullTiles = 0;
+                        for(int k = j; k > y; k--){
+                            if(tileGrid[x, k] == null) nullTiles++;
+                            else break;
+                        }
+
+                        tokenGrid[x, j - nullTiles] = tokenGrid[x, j + 1];
+                        tokenGrid[x, j - nullTiles].GetComponent<Token>().setIndex(x, j - nullTiles);
+                        tokenGrid[x, j - nullTiles].GetComponent<Token>().move();
                         tokenGrid[x, j + 1] = null;
                         //Decrement distance, incrememtn index
                         distances[distIndex]--;
@@ -244,14 +257,14 @@ public class Gameplay : MonoBehaviour
             }
             //Add token to top
             GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * x), initialY + 
-                    (tileSideLength * (sideLengthY - 1)), 0), token.transform.rotation);
+                    (tileSideLength * (highestIndex)), 0), token.transform.rotation);
             int tokenType = UnityEngine.Random.Range(0, tokenList.Count);
             nextToken.GetComponent<SpriteRenderer>().sprite = tokenList[tokenType];
             nextToken.GetComponent<Token>().type = tokenType;
-            nextToken.GetComponent<Token>().setIndex(x, sideLengthY - 1);
+            nextToken.GetComponent<Token>().setIndex(x, highestIndex);
             nextToken.GetComponent<SpriteRenderer>().sortingOrder = 2;
             nextToken.transform.parent = level.transform;
-            tokenGrid[x, sideLengthY - 1] = nextToken;
+            tokenGrid[x, highestIndex] = nextToken;
             //Add new token to list of distances
             distances.Add(i - 1);
         }
