@@ -26,7 +26,7 @@ public class Gameplay : MonoBehaviour
     public float initialY;
     
     //The game objects for the board and text file path
-    public String filePath = "Assets/levels/1_1.txt";
+    public String filePath;
     public GameObject[,] tileGrid;
     public GameObject[,] tokenGrid;
 
@@ -43,6 +43,10 @@ public class Gameplay : MonoBehaviour
     {
         //Get the component
         level = GetComponent<Gameplay>();
+
+        filePath = Application.streamingAssetsPath + "/levels/1_2.txt";
+
+        Debug.Log(filePath);
         
         //Draw the board
         drawBoard();
