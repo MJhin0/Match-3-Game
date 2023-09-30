@@ -31,7 +31,6 @@ public class Token : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
     }
     
     //Gets the token object upon instantiation
@@ -92,8 +91,8 @@ public class Token : MonoBehaviour
         swappedToken.setIndex(tempX, tempY);
 
         //Swap in physical location
-        move();
-        swappedToken.move();
+        setTarget();
+        swappedToken.setTarget();
 
         //Check for matches
         bool match1 = findMatch();
@@ -108,6 +107,13 @@ public class Token : MonoBehaviour
 
     public void move(){
         Gameplay.level.tokenGrid[indexX, indexY].transform.position = new Vector3(Gameplay.level.initialX + (Gameplay.level.tileSideLength * indexX), 
+            Gameplay.level.initialY + (Gameplay.level.tileSideLength * indexY), 0);
+    }
+
+    public void setTarget(){
+        isMoving = true;
+        tokensMoving++;
+        intendedPosition = new Vector3(Gameplay.level.initialX + (Gameplay.level.tileSideLength * indexX), 
             Gameplay.level.initialY + (Gameplay.level.tileSideLength * indexY), 0);
     }
 
@@ -196,6 +202,12 @@ public class Token : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(isMoving){
+            transform.position = Vector3.MoveTowards(transform.position, intendedPosition, Gameplay.level.swapSpeed);
+            if(Vector3.Distance(transform.position, intendedPosition) < 0.001f) {
+                isMoving = false;
+                tokensMoving--;
+            }
+        }
     }
 }
