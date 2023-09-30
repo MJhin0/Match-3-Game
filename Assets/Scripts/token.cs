@@ -23,10 +23,11 @@ public class Token : MonoBehaviour
     private static Color selectFade = new Color(1f, 1f, 1f, 0.5f);
     private static Color deselectFade = new Color(1f, 1f, 1f, 1f);
 
-    //Variables for determine if a token is in motion
+    //Variables for determine if a token is in motion, and swap speed
     private bool isMoving = false;
     public static int tokensMoving = 0;
     private Vector3 intendedPosition;
+    private float swapSpeed = 2.5f;
 
     // Start is called before the first frame update
     void Start()
@@ -203,7 +204,7 @@ public class Token : MonoBehaviour
     void Update()
     {
         if(isMoving){
-            transform.position = Vector3.MoveTowards(transform.position, intendedPosition, Gameplay.level.swapSpeed);
+            transform.position = Vector3.MoveTowards(transform.position, intendedPosition, swapSpeed * Time.deltaTime);
             if(Vector3.Distance(transform.position, intendedPosition) < 0.001f) {
                 isMoving = false;
                 tokensMoving--;

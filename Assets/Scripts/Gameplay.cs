@@ -37,8 +37,6 @@ public class Gameplay : MonoBehaviour
     //Used when matches are made
     public int chainReactions = 0;
     public int columnsMoving = 0;
-    //Swap Speed
-    public float swapSpeed = 0.35f;
 
     // Start is called before the first frame update
     void Start()
@@ -46,8 +44,7 @@ public class Gameplay : MonoBehaviour
         //Get the component
         level = GetComponent<Gameplay>();
 
-        filePath = Application.streamingAssetsPath + "/levels/1_2.txt";
-        swapSpeed *= Time.deltaTime;
+        filePath = Application.streamingAssetsPath + "/levels/1_1.txt";
 
         Debug.Log(filePath);
         
