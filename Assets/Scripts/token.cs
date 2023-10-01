@@ -24,10 +24,12 @@ public class Token : MonoBehaviour
     private static Color deselectFade = new Color(1f, 1f, 1f, 1f);
 
     //Variables for determine if a token is in motion, and swap speed
-    private bool isMoving = false;
+    private bool isSwapping = false;
+    private bool isFalling = false;
     public static int tokensMoving = 0;
-    private Vector3 intendedPosition;
-    private float swapSpeed = 2.5f;
+    public Vector3 intendedPosition;
+    private float swapSpeed = 4.0f;
+    private float fallSpeed = 1.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -61,7 +63,7 @@ public class Token : MonoBehaviour
 
     //Selects/Deselects tokens
     void OnMouseDown() {
-        if(Gameplay.level.chainReactions > 0) return;
+        if(Gameplay.level.chainReactions > 0 || tokensMoving > 0) return;
         if(isSelected) Deselect();
         else{
             if(lastSelected == null) Select();
@@ -112,7 +114,14 @@ public class Token : MonoBehaviour
     }
 
     public void setTarget(){
-        isMoving = true;
+        isSwapping = true;
+        tokensMoving++;
+        intendedPosition = new Vector3(Gameplay.level.initialX + (Gameplay.level.tileSideLength * indexX), 
+            Gameplay.level.initialY + (Gameplay.level.tileSideLength * indexY), 0);
+    }
+
+    public void setDrop(){
+        isFalling = true;
         tokensMoving++;
         intendedPosition = new Vector3(Gameplay.level.initialX + (Gameplay.level.tileSideLength * indexX), 
             Gameplay.level.initialY + (Gameplay.level.tileSideLength * indexY), 0);
@@ -203,11 +212,20 @@ public class Token : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(isMoving){
+        if(isSwapping){
             transform.position = Vector3.MoveTowards(transform.position, intendedPosition, swapSpeed * Time.deltaTime);
             if(Vector3.Distance(transform.position, intendedPosition) < 0.001f) {
-                isMoving = false;
+                isSwapping = false;
                 tokensMoving--;
+            }
+        }
+        if(isFalling){ 
+            transform.position = Vector3.MoveTowards(transform.position, intendedPosition, fallSpeed * Time.deltaTime);
+            fallSpeed += 0.1f;
+            if(Vector3.Distance(transform.position, intendedPosition) < 0.001f){
+                isFalling = false;
+                tokensMoving--;
+                fallSpeed = 1.0f;
             }
         }
     }

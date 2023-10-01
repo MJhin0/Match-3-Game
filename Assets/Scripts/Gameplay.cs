@@ -13,9 +13,10 @@ public class Gameplay : MonoBehaviour
     public static Gameplay level;
     //List of possible tokens
     public List<Sprite> tokenList = new List<Sprite>();
-    //The board dimensions (assuming square board)
+    //The board dimensions (assuming square board) and top of screen
     public int sideLengthX;
     public int sideLengthY;
+    private float topOfScreen;
     //Tile object and grid, plus token grid
     public GameObject tile;
     public GameObject token;
@@ -43,6 +44,8 @@ public class Gameplay : MonoBehaviour
     {
         //Get the component
         level = GetComponent<Gameplay>();
+
+        topOfScreen = Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelHeight, Camera.main.nearClipPlane)).y;
 
         filePath = Application.streamingAssetsPath + "/levels/1_1.txt";
 
@@ -157,7 +160,7 @@ public class Gameplay : MonoBehaviour
                 lastUnder = tokenType;
                 lastColumn[j] = tokenType;
 
-                //Draw and add to array
+                //Draw, stop gravity, and add to array
                 nextToken.GetComponent<SpriteRenderer>().sprite = tokenList[tokenType];
                 nextToken.GetComponent<Token>().type = tokenType;
                 nextToken.GetComponent<Token>().setIndex(i, j);
@@ -231,8 +234,6 @@ public class Gameplay : MonoBehaviour
                     
         //Shift tokens down
         for(int i = emptyCount; i > 0; i--){
-            //Delay for each tile moved down
-            yield return new WaitForSeconds(0.1f);
             //Keep track/reset of the index in the distance list
             int distIndex = 0;
             //Move the tokens down one
@@ -251,7 +252,6 @@ public class Gameplay : MonoBehaviour
 
                         tokenGrid[x, j - nullTiles] = tokenGrid[x, j + 1];
                         tokenGrid[x, j - nullTiles].GetComponent<Token>().setIndex(x, j - nullTiles);
-                        tokenGrid[x, j - nullTiles].GetComponent<Token>().move();
                         tokenGrid[x, j + 1] = null;
                         //Decrement distance, incrememtn index
                         distances[distIndex]--;
@@ -262,8 +262,8 @@ public class Gameplay : MonoBehaviour
                 }
             }
             //Add token to top
-            GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * x), initialY + 
-                    (tileSideLength * (highestIndex)), 0), token.transform.rotation);
+            GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * x), topOfScreen + emptyCount - i + 1, 0), 
+                token.transform.rotation);
             int tokenType = UnityEngine.Random.Range(0, tokenList.Count);
             nextToken.GetComponent<SpriteRenderer>().sprite = tokenList[tokenType];
             nextToken.GetComponent<Token>().type = tokenType;
@@ -273,6 +273,15 @@ public class Gameplay : MonoBehaviour
             tokenGrid[x, highestIndex] = nextToken;
             //Add new token to list of distances
             distances.Add(i - 1);
+        }
+
+        yield return new WaitForSeconds(0.1f);
+
+        //Start token drop
+        for(int i = y; i <= highestIndex; i++){
+            //Only drop if actual tile
+            if(tileGrid[x, i] == null) continue;
+            tokenGrid[x, i].GetComponent<Token>().setDrop();
         }
 
         columnsMoving--;
