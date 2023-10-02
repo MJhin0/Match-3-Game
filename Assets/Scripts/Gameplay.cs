@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Gameplay : MonoBehaviour
 {
@@ -34,6 +35,12 @@ public class Gameplay : MonoBehaviour
     public int chainReactions = 0;
     public int columnsMoving = 0;
 
+    public float gameTime = 10.0f; // total game time in seconds
+    private float remainingTime;
+
+    public int score = 0; //Game score
+    public Text scoreText;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,6 +49,10 @@ public class Gameplay : MonoBehaviour
         
         //Draw the board
         drawBoard();
+
+        //Set time
+
+        remainingTime = gameTime;
     }
 
     void drawBoard(){
@@ -189,7 +200,7 @@ public class Gameplay : MonoBehaviour
             else{ //Add this token's drop distance to the list
                 distances.Add(emptyCount);
             }
-                    
+        UpdateScore(emptyCount * 10);    
         //Shift tokens down
         for(int i = emptyCount; i > 0; i--){
             //Delay for each tile moved down
@@ -231,9 +242,33 @@ public class Gameplay : MonoBehaviour
         columnsMoving--;
     }
 
+    public void UpdateScore(int points)
+{
+    score += points;
+    
+
+    if (scoreText != null)
+    {
+        scoreText.text = "Score: " + score;  // Update the score text element
+    }
+}
+
     // Update is called once per frame
     void Update()
     {
-        
+        if (remainingTime > 0)
+        {
+            remainingTime -= Time.deltaTime;
+        }
+        else
+        {
+            remainingTime = 0;
+            // Trigger game over or any other event when time runs out
+            Debug.Log("Time's up!");
+
+        }
+
+        Debug.Log("Remaining Time: " + remainingTime + "Score: " + score);
+
     }
 }
