@@ -29,7 +29,7 @@ public class Token : MonoBehaviour
     public static int tokensMoving = 0;
     public Vector3 intendedPosition;
     private float swapSpeed = 4.0f;
-    private float fallSpeed = 1.0f;
+    private float fallSpeed = 2.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -212,16 +212,21 @@ public class Token : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+    }
+
+    void FixedUpdate()
+    {
         if(isSwapping){
-            transform.position = Vector3.MoveTowards(transform.position, intendedPosition, swapSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, intendedPosition, swapSpeed * Time.fixedDeltaTime);
             if(Vector3.Distance(transform.position, intendedPosition) < 0.001f) {
                 isSwapping = false;
                 tokensMoving--;
             }
         }
         if(isFalling){ 
-            transform.position = Vector3.MoveTowards(transform.position, intendedPosition, fallSpeed * Time.deltaTime);
-            fallSpeed += 0.1f;
+            transform.position = Vector3.MoveTowards(transform.position, intendedPosition, fallSpeed * Time.fixedDeltaTime);
+            fallSpeed += 0.5f;
             if(Vector3.Distance(transform.position, intendedPosition) < 0.001f){
                 isFalling = false;
                 tokensMoving--;
