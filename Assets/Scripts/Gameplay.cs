@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Gameplay : MonoBehaviour
@@ -260,15 +261,19 @@ public class Gameplay : MonoBehaviour
         {
             remainingTime -= Time.deltaTime;
         }
-        else
+        else if (remainingTime <= 0 && enabled)
         {
-            remainingTime = 0;
-            // Trigger game over or any other event when time runs out
-            Debug.Log("Time's up!");
-
+            Debug.Log("Time's up! Final Score: " + score);
+            SceneManager.LoadScene("EndScreen"); // Load the end screen scene
+            return;
         }
 
-        Debug.Log("Remaining Time: " + remainingTime + "Score: " + score);
+        if (score >= 100)
+        {
+            Debug.Log("You've reached 100 points!");
+            SceneManager.LoadScene("EndScreen"); // Load the end screen scene
+            return;
+        }
 
     }
 }
