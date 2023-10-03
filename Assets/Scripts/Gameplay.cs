@@ -5,6 +5,8 @@ using System.IO;
 using Unity.VisualScripting;
 using Unity.VisualScripting.AssemblyQualifiedNameParser;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Gameplay : MonoBehaviour
 {
@@ -39,6 +41,12 @@ public class Gameplay : MonoBehaviour
     public int chainReactions = 0;
     public int columnsMoving = 0;
 
+    public float gameTime = 10.0f; // total game time in seconds
+    private float remainingTime;
+
+    public int score = 0; //Game score
+    public Text scoreText;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -53,6 +61,10 @@ public class Gameplay : MonoBehaviour
         
         //Draw the board
         drawBoard();
+
+        //Set time
+
+        remainingTime = gameTime;
     }
 
     void drawBoard(){
@@ -230,8 +242,10 @@ public class Gameplay : MonoBehaviour
             else{ //Add this token's drop distance to the list
                 distances.Add(emptyCount);
             }
+
+        UpdateScore(emptyCount * 10);    
+
         }
-                    
         //Shift tokens down
         for(int i = emptyCount; i > 0; i--){
             //Keep track/reset of the index in the distance list
@@ -287,9 +301,37 @@ public class Gameplay : MonoBehaviour
         columnsMoving--;
     }
 
+    public void UpdateScore(int points)
+{
+    score += points;
+    
+
+    if (scoreText != null)
+    {
+        scoreText.text = "Score: " + score;  // Update the score text element
+    }
+}
+
     // Update is called once per frame
     void Update()
     {
-        
+        if (remainingTime > 0)
+        {
+            remainingTime -= Time.deltaTime;
+        }
+        else if (remainingTime <= 0 && enabled)
+        {
+            Debug.Log("Time's up! Final Score: " + score);
+            SceneManager.LoadScene("EndScreen"); // Load the end screen scene
+            return;
+        }
+
+        if (score >= 100)
+        {
+            Debug.Log("You've reached 100 points!");
+            SceneManager.LoadScene("EndScreen"); // Load the end screen scene
+            return;
+        }
+
     }
 }
