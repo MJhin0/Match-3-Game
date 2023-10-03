@@ -302,15 +302,13 @@ public class Gameplay : MonoBehaviour
     }
 
     public void UpdateScore(int points)
-{
-    score += points;
-    
-
-    if (scoreText != null)
     {
-        scoreText.text = "Score: " + score;  // Update the score text element
+        score += points;
+        if (scoreText != null)
+        {
+            scoreText.text = "Score: " + score;  // Update the score text element
+        }
     }
-}
 
     // Update is called once per frame
     void Update()
@@ -322,14 +320,14 @@ public class Gameplay : MonoBehaviour
         else if (remainingTime <= 0 && enabled)
         {
             Debug.Log("Time's up! Final Score: " + score);
-            SceneManager.LoadScene("EndScreen"); // Load the end screen scene
+            SceneManager.LoadScene("EndScene"); // Load the end screen scene
             return;
         }
 
-        if (score >= 100)
+        if (score >= 10000)
         {
             Debug.Log("You've reached 100 points!");
-            SceneManager.LoadScene("EndScreen"); // Load the end screen scene
+            SceneManager.LoadScene("EndScene"); // Load the end screen scene
             return;
         }
 
