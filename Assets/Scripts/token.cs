@@ -23,10 +23,17 @@ public class Token : MonoBehaviour
     private static Color selectFade = new Color(1f, 1f, 1f, 0.5f);
     private static Color deselectFade = new Color(1f, 1f, 1f, 1f);
 
+    //Variables for determine if a token is in motion, and swap speed
+    private bool isSwapping = false;
+    private bool isFalling = false;
+    public static int tokensMoving = 0;
+    public Vector3 intendedPosition;
+    private float swapSpeed = 4.0f;
+    private float fallSpeed = 2.0f;
+
     // Start is called before the first frame update
     void Start()
     {
-
     }
     
     //Gets the token object upon instantiation
@@ -56,7 +63,7 @@ public class Token : MonoBehaviour
 
     //Selects/Deselects tokens
     void OnMouseDown() {
-        if(Gameplay.level.chainReactions > 0) return;
+        if(Gameplay.level.chainReactions > 0 || tokensMoving > 0) return;
         if(isSelected) Deselect();
         else{
             if(lastSelected == null) Select();
@@ -87,8 +94,8 @@ public class Token : MonoBehaviour
         swappedToken.setIndex(tempX, tempY);
 
         //Swap in physical location
-        move();
-        swappedToken.move();
+        setTarget();
+        swappedToken.setTarget();
 
         //Check for matches
         bool match1 = findMatch();
@@ -103,6 +110,20 @@ public class Token : MonoBehaviour
 
     public void move(){
         Gameplay.level.tokenGrid[indexX, indexY].transform.position = new Vector3(Gameplay.level.initialX + (Gameplay.level.tileSideLength * indexX), 
+            Gameplay.level.initialY + (Gameplay.level.tileSideLength * indexY), 0);
+    }
+
+    public void setTarget(){
+        isSwapping = true;
+        tokensMoving++;
+        intendedPosition = new Vector3(Gameplay.level.initialX + (Gameplay.level.tileSideLength * indexX), 
+            Gameplay.level.initialY + (Gameplay.level.tileSideLength * indexY), 0);
+    }
+
+    public void setDrop(){
+        isFalling = true;
+        tokensMoving++;
+        intendedPosition = new Vector3(Gameplay.level.initialX + (Gameplay.level.tileSideLength * indexX), 
             Gameplay.level.initialY + (Gameplay.level.tileSideLength * indexY), 0);
     }
 
@@ -122,6 +143,8 @@ public class Token : MonoBehaviour
 
         //Check above
         for(int i = indexY + 1; i < Gameplay.level.sideLengthY; i++){
+            //Stop tracking if a no tile spot is hit before the board side
+            if(Gameplay.level.tileGrid[indexX, i] == null) break;
             compare = Gameplay.level.tokenGrid[indexX, i].GetComponent<Token>();
             if(type == compare.type){
                 verticalCount++;
@@ -131,6 +154,8 @@ public class Token : MonoBehaviour
         }
         //Check below
         for(int i = indexY - 1; i >= 0; i--){
+            //Stop tracking if a no tile spot is hit before the board side
+            if(Gameplay.level.tileGrid[indexX, i] == null) break;
             compare = Gameplay.level.tokenGrid[indexX, i].GetComponent<Token>();
             if(type == compare.type){
                 verticalCount++;
@@ -146,6 +171,8 @@ public class Token : MonoBehaviour
 
         //Check right
         for(int i = indexX + 1; i < Gameplay.level.sideLengthX; i++){
+            //Stop tracking if a no tile spot is hit before the board side
+            if(Gameplay.level.tileGrid[i, indexY] == null) break;
             compare = Gameplay.level.tokenGrid[i, indexY].GetComponent<Token>();
             if(type == compare.type){
                 horizontalCount++;
@@ -155,6 +182,8 @@ public class Token : MonoBehaviour
         }
         //Check left
         for(int i = indexX - 1; i >= 0; i--){
+            //Stop tracking if a no tile spot is hit before the board side
+            if(Gameplay.level.tileGrid[i, indexY] == null) break;
             compare = Gameplay.level.tokenGrid[i, indexY].GetComponent<Token>();
             if(type == compare.type){
                 horizontalCount++;
@@ -184,5 +213,25 @@ public class Token : MonoBehaviour
     void Update()
     {
         
+    }
+
+    void FixedUpdate()
+    {
+        if(isSwapping){
+            transform.position = Vector3.MoveTowards(transform.position, intendedPosition, swapSpeed * Time.fixedDeltaTime);
+            if(Vector3.Distance(transform.position, intendedPosition) < 0.001f) {
+                isSwapping = false;
+                tokensMoving--;
+            }
+        }
+        if(isFalling){ 
+            transform.position = Vector3.MoveTowards(transform.position, intendedPosition, fallSpeed * Time.fixedDeltaTime);
+            fallSpeed += 0.5f;
+            if(Vector3.Distance(transform.position, intendedPosition) < 0.001f){
+                isFalling = false;
+                tokensMoving--;
+                fallSpeed = 1.0f;
+            }
+        }
     }
 }
