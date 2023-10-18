@@ -221,12 +221,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tokenList:
-  - {fileID: 21300000, guid: 55bfffaee38b668459889cd12aa4fd07, type: 3}
-  - {fileID: 21300000, guid: e38f2b3969c97d942949f1c748963493, type: 3}
-  - {fileID: 21300000, guid: 0c0b97d4a5762924ea5ae9bcd51be902, type: 3}
-  - {fileID: 21300000, guid: 69a79082ffdb95945bdd8947eb9b6e1a, type: 3}
-  - {fileID: 21300000, guid: 8a1efba8bb3ff904c941995a0423e9aa, type: 3}
-  - {fileID: 21300000, guid: 8ac6e95ef25d73d459318f8d5010f9e4, type: 3}
+  - {fileID: 21300000, guid: 0aa3572bd8a149f4b9be3788386897f9, type: 3}
+  - {fileID: 21300000, guid: c96c94412dc8e0a47bdf00d5935c46f9, type: 3}
+  - {fileID: 21300000, guid: 1842471f00ec25e4ba0bf95d787ecf3e, type: 3}
+  - {fileID: 21300000, guid: c1ec9122e3bcf9e44b89dbf0b56de438, type: 3}
+  - {fileID: 21300000, guid: d316fe7112205e84dad364041bb43c30, type: 3}
+  - {fileID: 21300000, guid: 3edd7307f2f4cb349a51b350e001ad09, type: 3}
   sideLengthX: 14
   sideLengthY: 12
   tile: {fileID: 9161258274682096526, guid: 61f172ecd7ee6d842a7fc0b667659860, type: 3}
@@ -234,6 +234,7 @@ MonoBehaviour:
   tileSideLength: 0
   initialX: 0
   initialY: 0
+  filePath: 
   tileCount: 0
   tilesCleared: 0
   chainReactions: 0
