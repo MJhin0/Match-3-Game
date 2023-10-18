@@ -238,6 +238,8 @@ public class Gameplay : MonoBehaviour
                 tileGrid[x, i].GetComponent<Tile>().breakLayer();
                 tokenGrid[x, i] = null;
                 emptyCount++;
+                //Add to ability
+                AbilityExplode.abilityExplode.AddToBar();
             }
             else{ //Add this token's drop distance to the list
                 distances.Add(emptyCount);

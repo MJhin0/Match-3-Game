@@ -74,9 +74,13 @@ public class Token : MonoBehaviour
             for (int i = -1; i < 2; i++) {
                 for (int j = -1; j < 2; j++) {
                     try {
+                        if(Gameplay.level.tileGrid[indexX + i, indexY+ j] == null){
+                            Debug.Log("Empty Tile");
+                            continue;
+                        }
                         explodingList.Add(Gameplay.level.tokenGrid[indexX + i, indexY+ j]);
                     } catch (Exception e) {
-                        Debug.Log("Exploding a non-existent tile");
+                        Debug.Log(e.ToString());
                     }
                 }
             }
@@ -230,11 +234,8 @@ public class Token : MonoBehaviour
         for(int i = 0; i < tokens.Count; i++){
             tokens[i].GetComponent<Token>().marked = true;
             // Adds to the ability bars
-            AbilityExplode.abilityExplode.AddToBar();
         }
         marked = true;
-        // Temporary fix, does not include the token that is selected to move.
-        AbilityExplode.abilityExplode.AddToBar();
     }
 
     // Update is called once per frame

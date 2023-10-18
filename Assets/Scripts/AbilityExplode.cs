@@ -15,7 +15,7 @@ public class AbilityExplode : MonoBehaviour
 
     // Variables for how much the ability is charged
     public int currentBar = 0;
-    private int maxBar = 50;
+    private int maxBar = 10;
     public bool activateExplode = false;
     private static Color activated = new Color(1f, 1f, 1f, 1f);
     private static Color deactivated = new Color(1f, 1f, 1f, 1f);
