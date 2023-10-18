@@ -23,6 +23,10 @@ public class Token : MonoBehaviour
     private static Color selectFade = new Color(1f, 1f, 1f, 0.5f);
     private static Color deselectFade = new Color(1f, 1f, 1f, 1f);
 
+    // Variable for using abilities
+    public bool abilitySelect;
+    List<GameObject> explodingList = new List<GameObject>();
+    
     //Variables for determine if a token is in motion, and swap speed
     private bool isSwapping = false;
     private bool isFalling = false;
@@ -64,6 +68,26 @@ public class Token : MonoBehaviour
     //Selects/Deselects tokens
     void OnMouseDown() {
         if(Gameplay.level.chainReactions > 0 || tokensMoving > 0) return;
+        
+        // For the Explode Ability, needs to left-click on a token.
+        if (AbilityExplode.abilityExplode.isSelected == true) {
+            for (int i = -1; i < 2; i++) {
+                for (int j = -1; j < 2; j++) {
+                    try {
+                        explodingList.Add(Gameplay.level.tokenGrid[indexX + i, indexY+ j]);
+                    } catch (Exception e) {
+                        Debug.Log("Exploding a non-existent tile");
+                    }
+                }
+            }
+            // Explodes the tokens.
+            destroyTokens(explodingList);
+            Gameplay.level.executeMatch();
+            // Deactivates the Explode Ability.
+            AbilityExplode.abilityExplode.Deselect();
+            AbilityExplode.abilityExplode.DeactivateExplode();
+        }
+
         if(isSelected) Deselect();
         else{
             if(lastSelected == null) Select();
@@ -205,8 +229,12 @@ public class Token : MonoBehaviour
     private void destroyTokens(List<GameObject> tokens){
         for(int i = 0; i < tokens.Count; i++){
             tokens[i].GetComponent<Token>().marked = true;
+            // Adds to the ability bars
+            AbilityExplode.abilityExplode.AddToBar();
         }
         marked = true;
+        // Temporary fix, does not include the token that is selected to move.
+        AbilityExplode.abilityExplode.AddToBar();
     }
 
     // Update is called once per frame
