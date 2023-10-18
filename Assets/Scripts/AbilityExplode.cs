@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AbilityExplode : MonoBehaviour
 {
     // Instance of the ability when other scripts need it
     public static AbilityExplode abilityExplode;
+    public Image sprite;
 
     // Variables for if the specific ability is selected
     public bool isSelected;
@@ -15,7 +17,7 @@ public class AbilityExplode : MonoBehaviour
 
     // Variables for how much the ability is charged
     public int currentBar = 0;
-    private int maxBar = 10;
+    private int maxBar = 20;
     public bool activateExplode = false;
     private static Color activated = new Color(1f, 1f, 1f, 1f);
     private static Color deactivated = new Color(1f, 1f, 1f, 1f);
@@ -26,6 +28,8 @@ public class AbilityExplode : MonoBehaviour
     {
         // Get the component
         abilityExplode = GetComponent<AbilityExplode>();
+        sprite = GetComponent<Image>();
+        sprite.fillAmount = currentBar / maxBar;
     }
 
     // Left-clicking on the ability
@@ -43,11 +47,11 @@ public class AbilityExplode : MonoBehaviour
     // For when it is left-clicked on
     public void Select() {
         isSelected = true;
-        GetComponent<SpriteRenderer>().color = selectFade;
+        sprite.color = selectFade;
     }
     public void Deselect() {
         isSelected = false;
-        GetComponent<SpriteRenderer>().color = deselectFade;
+        sprite.color = deselectFade;
     }
 
     // Maybe add a right click to show how much the gauge is filled? Could be ambiguous when almost filled.
@@ -70,5 +74,6 @@ public class AbilityExplode : MonoBehaviour
         if (currentBar >= maxBar) {
             activateExplode = true;
         }
+        sprite.fillAmount = 1.0f * currentBar / maxBar;
     }
 }
