@@ -318,7 +318,7 @@ public class Gameplay : MonoBehaviour
         score += points;
         if (scoreText != null)
         {
-            scoreText.text = "score: " + score;  // Update the score text element
+            scoreText.text = "" + score;  // Update the score text element
         }
     }
 
@@ -330,7 +330,7 @@ public class Gameplay : MonoBehaviour
         remainingTime -= Time.deltaTime;
         UpdateTimerText(); // Call the method to update the timer text
     }
-    else if (remainingTime <= 0 && enabled)
+    else if (remainingTime <= 0 && enabled) 
     {
         Debug.Log("Time's up! Final Score: " + score);
         SceneManager.LoadScene("EndScene"); // Load the end screen scene
