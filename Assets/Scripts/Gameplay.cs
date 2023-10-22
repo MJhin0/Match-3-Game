@@ -337,9 +337,9 @@ public class Gameplay : MonoBehaviour
         return;
     }
 
-    if (score >= 10000)
+    if (score >= 1000)
     {
-        Debug.Log("You've reached 100 points!");
+        Debug.Log("You've reached 1000 points!");
         SceneManager.LoadScene("EndScene"); // Load the end screen scene
         return;
     }
