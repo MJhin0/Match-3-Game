@@ -7,6 +7,7 @@ using Unity.VisualScripting.AssemblyQualifiedNameParser;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class Gameplay : MonoBehaviour
 {
@@ -45,7 +46,9 @@ public class Gameplay : MonoBehaviour
     private float remainingTime;
 
     public int score = 0; //Game score
-    public Text scoreText;
+    public TextMeshProUGUI scoreText;
+
+    public TextMeshProUGUI timeText;
 
     // Start is called before the first frame update
     void Start()
@@ -97,6 +100,13 @@ public class Gameplay : MonoBehaviour
         //Draw the tokens
         instantiateTokens(tileSideLength, initialX, initialY);
         
+    }
+
+    void UpdateTimerText()
+    {
+        int minutes = Mathf.FloorToInt(remainingTime / 60);
+        int seconds = Mathf.FloorToInt(remainingTime % 60);
+        timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
     void instantiateTiles(float tileSideLength, float initialX, float initialY, int[,] board){
@@ -275,7 +285,7 @@ public class Gameplay : MonoBehaviour
                     }
                     //Otherwise move to next index
                     else distIndex++;
-                }
+                } 
             }
             //Add token to top
             GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * x), topOfScreen + emptyCount - i + 1, 0), 
@@ -308,30 +318,31 @@ public class Gameplay : MonoBehaviour
         score += points;
         if (scoreText != null)
         {
-            scoreText.text = "Score: " + score;  // Update the score text element
+            scoreText.text = "" + score;  // Update the score text element
         }
     }
 
     // Update is called once per frame
     void Update()
+{
+    if (remainingTime > 0)
     {
-        if (remainingTime > 0)
-        {
-            remainingTime -= Time.deltaTime;
-        }
-        else if (remainingTime <= 0 && enabled)
-        {
-            Debug.Log("Time's up! Final Score: " + score);
-            SceneManager.LoadScene("EndScene"); // Load the end screen scene
-            return;
-        }
-
-        if (score >= 10000)
-        {
-            Debug.Log("You've reached 100 points!");
-            SceneManager.LoadScene("EndScene"); // Load the end screen scene
-            return;
-        }
-
+        remainingTime -= Time.deltaTime;
+        UpdateTimerText(); // Call the method to update the timer text
     }
+    else if (remainingTime <= 0 && enabled) 
+    {
+        Debug.Log("Time's up! Final Score: " + score);
+        SceneManager.LoadScene("EndScene"); // Load the end screen scene
+        return;
+    }
+
+    if (score >= 1000)
+    {
+        Debug.Log("You've reached 1000 points!");
+        SceneManager.LoadScene("EndScene"); // Load the end screen scene
+        return;
+    }
+}
+
 }
