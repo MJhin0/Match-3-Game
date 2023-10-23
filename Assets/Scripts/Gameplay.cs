@@ -96,6 +96,8 @@ public class Gameplay : MonoBehaviour
 
         //Draw the tokens
         instantiateTokens(tileSideLength, initialX, initialY);
+
+        hasMovesRemaining();
         
     }
 
@@ -301,6 +303,84 @@ public class Gameplay : MonoBehaviour
         }
 
         columnsMoving--;
+    }
+
+    //These next 3 private methods are solely for the "No More Moves" algorithm
+    public bool hasMovesRemaining() {
+
+        //make array to compare, use -1 for no tile spaces
+        int[,] tokens = new int[sideLengthX, sideLengthY];
+        for(int i = 0; i < sideLengthX; i++){
+            for(int j = 0; j < sideLengthY; j++){
+                if(tileGrid[i, j] == null) tokens[i, j] = -1;
+                else tokens[i, j] = tokenGrid[i, j].GetComponent<Token>().type;
+            }
+        }
+
+        //Check Horizontal Swaps
+        for(int i = 0; i < sideLengthX - 1; i++){
+            for(int j = 0; j < sideLengthY; j++){
+                if(tokens[i, j] == -1 || tokens[i + 1, j] == -1) continue;
+                swapTokens(tokens, i, j, i+1, j);
+                if(findMatch(tokens, i, j) || findMatch(tokens, i+1, j)) return true;
+                swapTokens(tokens, i, j, i+1, j);
+            }
+        }
+
+        //Check Vertical Swaps
+        for(int i = 0; i < sideLengthX; i++){
+            for(int j = 0; j < sideLengthY - 1; j++){
+                if(tokens[i, j] == -1 || tokens[i, j + 1] == -1) continue;
+                swapTokens(tokens, i, j, i, j+1);
+                if(findMatch(tokens, i, j) || findMatch(tokens, i, j+1)) return true;
+                swapTokens(tokens, i, j, i, j+1);
+            }
+        }
+        return false;
+    }
+
+    private bool findMatch(int[,] tokens, int x, int y){
+
+        int verticalCount = 0;
+        int horizontalCount = 0;
+
+        //Check above
+        for(int i = y + 1; i < sideLengthY; i++){
+            if(tokens[x, i] == -1) break;
+            if(tokens[x, i] == tokens[x, y]) verticalCount++;
+            else break;
+        }
+        //Check below
+        for(int i = y - 1; i >= 0; i--){
+            if(tokens[x, i] == -1) break;
+            if(tokens[x, i] == tokens[x, y]) verticalCount++;
+            else break;
+        }
+        //If vertical has match, return
+        if(verticalCount >= 2) return true;
+
+        //Check right
+        for(int i = x + 1; i < sideLengthX; i++){
+            if(tokens[i, y] == -1) break;
+            if(tokens[i, y] == tokens[x, y]) horizontalCount++;
+            else break;
+        }
+        //Check left
+        for(int i = x - 1; i >= 0; i--){
+            if(tokens[i, y] == -1) break;
+            if(tokens[i, y] == tokens[x, y]) horizontalCount++;
+            else break;
+        }
+        //If horizontal has match, return
+        if(horizontalCount >= 2) return true;
+
+        return false;
+    }
+
+    private void swapTokens(int[,] tokens, int x1, int y1, int x2, int y2){
+        int temp = tokens[x1, y1];
+        tokens[x1, y1] = tokens[x2, y2];
+        tokens[x2, y2] = temp;
     }
 
     public void UpdateScore(int points)

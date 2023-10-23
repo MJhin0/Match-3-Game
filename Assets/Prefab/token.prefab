@@ -102,6 +102,7 @@ MonoBehaviour:
   indexX: 0
   indexY: 0
   marked: 0
+  abilitySelect: 0
   intendedPosition: {x: 0, y: 0, z: 0}
 --- !u!61 &7058604836011241016
 BoxCollider2D:
