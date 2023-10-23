@@ -75,7 +75,6 @@ public class Token : MonoBehaviour
                 for (int j = -1; j < 2; j++) {
                     try {
                         if(Gameplay.level.tileGrid[indexX + i, indexY+ j] == null){
-                            Debug.Log("Empty Tile");
                             continue;
                         }
                         explodingList.Add(Gameplay.level.tokenGrid[indexX + i, indexY+ j]);

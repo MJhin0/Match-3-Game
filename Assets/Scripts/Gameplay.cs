@@ -56,8 +56,6 @@ public class Gameplay : MonoBehaviour
         topOfScreen = Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelHeight, Camera.main.nearClipPlane)).y;
 
         filePath = Application.streamingAssetsPath + "/levels/1_1.txt";
-
-        Debug.Log(filePath);
         
         //Draw the board
         drawBoard();
@@ -406,9 +404,9 @@ public class Gameplay : MonoBehaviour
             return;
         }
 
-        if (score >= 10000)
+        if (score >= 100000)
         {
-            Debug.Log("You've reached 100 points!");
+            Debug.Log("You've reached 100000 points!");
             SceneManager.LoadScene("EndScene"); // Load the end screen scene
             return;
         }

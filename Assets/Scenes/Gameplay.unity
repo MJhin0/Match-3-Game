@@ -389,7 +389,7 @@ MonoBehaviour:
   tilesCleared: 0
   chainReactions: 0
   columnsMoving: 0
-  gameTime: 60
+  gameTime: 120
   score: 0
   scoreText: {fileID: 0}
 --- !u!4 &1300501333
