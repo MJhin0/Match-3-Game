@@ -130,6 +130,7 @@ public class Token : MonoBehaviour
         bool match2 = lastSelected.findMatch();
         if(match1 || match2) {
             lastSelected.Deselect();
+            //StartCoroutine(Gameplay.level.destroyAndReplace());
             Gameplay.level.executeMatch();
         }else lastSelected.Deselect();
 
