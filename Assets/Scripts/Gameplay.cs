@@ -7,7 +7,6 @@ using Unity.VisualScripting.AssemblyQualifiedNameParser;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
 
 public class Gameplay : MonoBehaviour
 {
@@ -46,9 +45,7 @@ public class Gameplay : MonoBehaviour
     private float remainingTime;
 
     public int score = 0; //Game score
-    public TextMeshProUGUI scoreText;
-
-    public TextMeshProUGUI timeText;
+    public Text scoreText;
 
     // Start is called before the first frame update
     void Start()
@@ -99,14 +96,9 @@ public class Gameplay : MonoBehaviour
 
         //Draw the tokens
         instantiateTokens(tileSideLength, initialX, initialY);
-        
-    }
 
-    void UpdateTimerText()
-    {
-        int minutes = Mathf.FloorToInt(remainingTime / 60);
-        int seconds = Mathf.FloorToInt(remainingTime % 60);
-        timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        hasMovesRemaining();
+        
     }
 
     void instantiateTiles(float tileSideLength, float initialX, float initialY, int[,] board){
@@ -285,7 +277,7 @@ public class Gameplay : MonoBehaviour
                     }
                     //Otherwise move to next index
                     else distIndex++;
-                } 
+                }
             }
             //Add token to top
             GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * x), topOfScreen + emptyCount - i + 1, 0), 
@@ -313,36 +305,113 @@ public class Gameplay : MonoBehaviour
         columnsMoving--;
     }
 
+    //These next 3 private methods are solely for the "No More Moves" algorithm
+    public bool hasMovesRemaining() {
+
+        //make array to compare, use -1 for no tile spaces
+        int[,] tokens = new int[sideLengthX, sideLengthY];
+        for(int i = 0; i < sideLengthX; i++){
+            for(int j = 0; j < sideLengthY; j++){
+                if(tileGrid[i, j] == null) tokens[i, j] = -1;
+                else tokens[i, j] = tokenGrid[i, j].GetComponent<Token>().type;
+            }
+        }
+
+        //Check Horizontal Swaps
+        for(int i = 0; i < sideLengthX - 1; i++){
+            for(int j = 0; j < sideLengthY; j++){
+                if(tokens[i, j] == -1 || tokens[i + 1, j] == -1) continue;
+                swapTokens(tokens, i, j, i+1, j);
+                if(findMatch(tokens, i, j) || findMatch(tokens, i+1, j)) return true;
+                swapTokens(tokens, i, j, i+1, j);
+            }
+        }
+
+        //Check Vertical Swaps
+        for(int i = 0; i < sideLengthX; i++){
+            for(int j = 0; j < sideLengthY - 1; j++){
+                if(tokens[i, j] == -1 || tokens[i, j + 1] == -1) continue;
+                swapTokens(tokens, i, j, i, j+1);
+                if(findMatch(tokens, i, j) || findMatch(tokens, i, j+1)) return true;
+                swapTokens(tokens, i, j, i, j+1);
+            }
+        }
+        return false;
+    }
+
+    private bool findMatch(int[,] tokens, int x, int y){
+
+        int verticalCount = 0;
+        int horizontalCount = 0;
+
+        //Check above
+        for(int i = y + 1; i < sideLengthY; i++){
+            if(tokens[x, i] == -1) break;
+            if(tokens[x, i] == tokens[x, y]) verticalCount++;
+            else break;
+        }
+        //Check below
+        for(int i = y - 1; i >= 0; i--){
+            if(tokens[x, i] == -1) break;
+            if(tokens[x, i] == tokens[x, y]) verticalCount++;
+            else break;
+        }
+        //If vertical has match, return
+        if(verticalCount >= 2) return true;
+
+        //Check right
+        for(int i = x + 1; i < sideLengthX; i++){
+            if(tokens[i, y] == -1) break;
+            if(tokens[i, y] == tokens[x, y]) horizontalCount++;
+            else break;
+        }
+        //Check left
+        for(int i = x - 1; i >= 0; i--){
+            if(tokens[i, y] == -1) break;
+            if(tokens[i, y] == tokens[x, y]) horizontalCount++;
+            else break;
+        }
+        //If horizontal has match, return
+        if(horizontalCount >= 2) return true;
+
+        return false;
+    }
+
+    private void swapTokens(int[,] tokens, int x1, int y1, int x2, int y2){
+        int temp = tokens[x1, y1];
+        tokens[x1, y1] = tokens[x2, y2];
+        tokens[x2, y2] = temp;
+    }
+
     public void UpdateScore(int points)
     {
         score += points;
         if (scoreText != null)
         {
-            scoreText.text = "" + score;  // Update the score text element
+            scoreText.text = "Score: " + score;  // Update the score text element
         }
     }
 
     // Update is called once per frame
     void Update()
-{
-    if (remainingTime > 0)
     {
-        remainingTime -= Time.deltaTime;
-        UpdateTimerText(); // Call the method to update the timer text
-    }
-    else if (remainingTime <= 0 && enabled) 
-    {
-        Debug.Log("Time's up! Final Score: " + score);
-        SceneManager.LoadScene("EndScene"); // Load the end screen scene
-        return;
-    }
+        if (remainingTime > 0)
+        {
+            remainingTime -= Time.deltaTime;
+        }
+        else if (remainingTime <= 0 && enabled)
+        {
+            Debug.Log("Time's up! Final Score: " + score);
+            SceneManager.LoadScene("EndScene"); // Load the end screen scene
+            return;
+        }
 
-    if (score >= 1000)
-    {
-        Debug.Log("You've reached 1000 points!");
-        SceneManager.LoadScene("EndScene"); // Load the end screen scene
-        return;
-    }
-}
+        if (score >= 10000)
+        {
+            Debug.Log("You've reached 100 points!");
+            SceneManager.LoadScene("EndScene"); // Load the end screen scene
+            return;
+        }
 
+    }
 }
