@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using Unity.VisualScripting;
 using Unity.VisualScripting.AssemblyQualifiedNameParser;
 using UnityEngine;
@@ -41,11 +42,12 @@ public class Gameplay : MonoBehaviour
     public int chainReactions = 0;
     public int columnsMoving = 0;
 
+    //Time and Score Variables with Text Fields
     public float gameTime = 10.0f; // total game time in seconds
     private float remainingTime;
-
+    public TextMeshProUGUI timeText;
     public int score = 0; //Game score
-    public Text scoreText;
+    public TextMeshProUGUI scoreText;
 
     // Start is called before the first frame update
     void Start()
@@ -63,6 +65,7 @@ public class Gameplay : MonoBehaviour
         //Set time
 
         remainingTime = gameTime;
+        UpdateScore(0);
     }
 
     void drawBoard(){
@@ -386,8 +389,14 @@ public class Gameplay : MonoBehaviour
         score += points;
         if (scoreText != null)
         {
-            scoreText.text = "Score: " + score;  // Update the score text element
+            scoreText.text = "" + score;  // Update the score text element
         }
+    }
+
+    public void UpdateTime(){
+        int minutes = Mathf.FloorToInt(remainingTime / 60);
+        int seconds = Mathf.FloorToInt(remainingTime % 60);
+        timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
     // Update is called once per frame
@@ -396,6 +405,7 @@ public class Gameplay : MonoBehaviour
         if (remainingTime > 0)
         {
             remainingTime -= Time.deltaTime;
+            UpdateTime();
         }
         else if (remainingTime <= 0 && enabled)
         {
