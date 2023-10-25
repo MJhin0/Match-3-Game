@@ -75,6 +75,7 @@ public class Token : MonoBehaviour
                 for (int j = -1; j < 2; j++) {
                     try {
                         if(Gameplay.level.tileGrid[indexX + i, indexY+ j] == null){
+                            Debug.Log("Empty Tile");
                             continue;
                         }
                         explodingList.Add(Gameplay.level.tokenGrid[indexX + i, indexY+ j]);
@@ -129,6 +130,7 @@ public class Token : MonoBehaviour
         bool match2 = lastSelected.findMatch();
         if(match1 || match2) {
             lastSelected.Deselect();
+            //StartCoroutine(Gameplay.level.destroyAndReplace());
             Gameplay.level.executeMatch();
         }else lastSelected.Deselect();
 
