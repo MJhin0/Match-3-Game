@@ -17,10 +17,10 @@ public class AbilityExplode : MonoBehaviour
 
     // Variables for how much the ability is charged
     public int currentBar = 0;
-    private int maxBar = 20;
+    private int maxBar = 50;
     public bool activateExplode = false;
     private static Color activated = new Color(1f, 1f, 1f, 1f);
-    private static Color deactivated = new Color(1f, 1f, 1f, 1f);
+    private static Color deactivated = new Color(0.75f, 0.75f, 0.75f, 1f);
 
 
     // Start is called before the first frame update
@@ -30,6 +30,7 @@ public class AbilityExplode : MonoBehaviour
         abilityExplode = GetComponent<AbilityExplode>();
         sprite = GetComponent<Image>();
         sprite.fillAmount = currentBar / maxBar;
+        sprite.color = deactivated;
     }
 
     // Left-clicking on the ability
@@ -61,12 +62,13 @@ public class AbilityExplode : MonoBehaviour
     public void DeactivateExplode() {
         currentBar = 0;
         activateExplode = false;
+        sprite.color = deactivated;
     }
 
     // Adds to the gauge by 1, will be used in other scripts
     public void AddToBar() {
         currentBar++;
-        Debug.Log(currentBar);
+        if(currentBar >= maxBar) sprite.color = activated;
     }
 
     // Update is called once per frame
