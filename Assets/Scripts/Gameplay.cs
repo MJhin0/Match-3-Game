@@ -41,6 +41,7 @@ public class Gameplay : MonoBehaviour
     //Used when matches are made
     public int chainReactions = 0;
     public int columnsMoving = 0;
+    public int combo = 1;
 
     //Time and Score Variables with Text Fields
     public float gameTime = 10.0f; // total game time in seconds
@@ -220,7 +221,11 @@ public class Gameplay : MonoBehaviour
                 if(tileGrid[i, j] == null) continue;
                 if(tokenGrid[i, j].GetComponent<Token>().findMatch()) matchExists = true;
             }
-        if(matchExists) StartCoroutine(destroyAndReplace());
+        if(matchExists) {
+            combo += 1;
+            StartCoroutine(destroyAndReplace());
+        }
+        else combo = 1;
         chainReactions--;
         if(tileCount == tilesCleared) Debug.Log("Clear!");
     }
@@ -248,9 +253,8 @@ public class Gameplay : MonoBehaviour
                 distances.Add(emptyCount);
             }
 
-        UpdateScore(emptyCount * 10);    
-
         }
+        UpdateScore(emptyCount * 10 * combo);
         //Shift tokens down
         for(int i = emptyCount; i > 0; i--){
             //Keep track/reset of the index in the distance list
