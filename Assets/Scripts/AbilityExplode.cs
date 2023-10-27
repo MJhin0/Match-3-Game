@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AbilityExplode : MonoBehaviour
 {
     // Instance of the ability when other scripts need it
     public static AbilityExplode abilityExplode;
+    public Image sprite;
 
     // Variables for if the specific ability is selected
     public bool isSelected;
@@ -18,7 +20,7 @@ public class AbilityExplode : MonoBehaviour
     private int maxBar = 50;
     public bool activateExplode = false;
     private static Color activated = new Color(1f, 1f, 1f, 1f);
-    private static Color deactivated = new Color(1f, 1f, 1f, 1f);
+    private static Color deactivated = new Color(0.75f, 0.75f, 0.75f, 1f);
 
 
     // Start is called before the first frame update
@@ -26,6 +28,9 @@ public class AbilityExplode : MonoBehaviour
     {
         // Get the component
         abilityExplode = GetComponent<AbilityExplode>();
+        sprite = GetComponent<Image>();
+        sprite.fillAmount = currentBar / maxBar;
+        sprite.color = deactivated;
     }
 
     // Left-clicking on the ability
@@ -43,11 +48,11 @@ public class AbilityExplode : MonoBehaviour
     // For when it is left-clicked on
     public void Select() {
         isSelected = true;
-        GetComponent<SpriteRenderer>().color = selectFade;
+        sprite.color = selectFade;
     }
     public void Deselect() {
         isSelected = false;
-        GetComponent<SpriteRenderer>().color = deselectFade;
+        sprite.color = deselectFade;
     }
 
     // Maybe add a right click to show how much the gauge is filled? Could be ambiguous when almost filled.
@@ -57,12 +62,13 @@ public class AbilityExplode : MonoBehaviour
     public void DeactivateExplode() {
         currentBar = 0;
         activateExplode = false;
+        sprite.color = deactivated;
     }
 
     // Adds to the gauge by 1, will be used in other scripts
     public void AddToBar() {
         currentBar++;
-        Debug.Log(currentBar);
+        if(currentBar >= maxBar) sprite.color = activated;
     }
 
     // Update is called once per frame
@@ -70,5 +76,6 @@ public class AbilityExplode : MonoBehaviour
         if (currentBar >= maxBar) {
             activateExplode = true;
         }
+        sprite.fillAmount = 1.0f * currentBar / maxBar;
     }
 }
