@@ -101,12 +101,14 @@ public class Gameplay : MonoBehaviour
     }
 
     public IEnumerator levelIntro(){
-        //Draw the board
+        //Draw the board and tiles
         drawBoard();
-        yield return new WaitForSeconds(1.0f);
+        //Wait for the text to show
+        yield return new WaitUntil(() => IntroText.phase == 1);
         //Draw the tokens
         instantiateTokens();
         yield return new WaitUntil(() => Token.tokensMoving == 0);
+        yield return new WaitUntil(() => IntroText.phase == 3);
         enabled = true;
     }
 
