@@ -16,7 +16,7 @@ public class Gameplay : MonoBehaviour
     public static Gameplay level;
     //List of possible tokens
     public List<Sprite> tokenList = new List<Sprite>();
-    //The board dimensions (assuming square board) and top of screen
+    //The board dimensions and top of screen
     public int sideLengthX;
     public int sideLengthY;
     private float topOfScreen;
@@ -41,34 +41,44 @@ public class Gameplay : MonoBehaviour
     //Used when matches are made
     public int chainReactions = 0;
     public int columnsMoving = 0;
+    public int combo = 1;
 
     //Time and Score Variables with Text Fields
-    public float gameTime = 10.0f; // total game time in seconds
-    private float remainingTime;
+    public float remainingTime; // total game time in seconds
     public TextMeshProUGUI timeText;
     public int score = 0; //Game score
     public TextMeshProUGUI scoreText;
 
+    //Variable for if Intro is playing
+    public bool introFinished = false;
+
     // Start is called before the first frame update
     void Start()
     {
+        enabled = false;
         //Get the component
         level = GetComponent<Gameplay>();
 
         topOfScreen = Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelHeight, Camera.main.nearClipPlane)).y;
 
-        filePath = Application.streamingAssetsPath + "/levels/1_1.txt";
-        
-        //Draw the board
-        drawBoard();
-
-        //Set time
-
-        remainingTime = gameTime;
+        //Set board file, time and score
+        filePath = Application.streamingAssetsPath + "/levels/1_1.txt";      
+        UpdateTime();
         UpdateScore(0);
+
+        //Start the level
+        StartCoroutine(levelIntro());
+
     }
 
     void drawBoard(){
+
+        //Get the tile dimensions (it's a square)
+        tileSideLength = tile.GetComponent<SpriteRenderer>().bounds.size.x;
+
+        //Determine the position of [0, 0] so board is centered
+        initialX = this.transform.position.x - (tileSideLength * sideLengthX / 2 - (tileSideLength / 2));
+        initialY = this.transform.position.y - (tileSideLength * sideLengthY / 2 - (tileSideLength / 2));
 
         //Open the text file and get dimensions
         StreamReader fileRead = new StreamReader(filePath);
@@ -84,25 +94,25 @@ public class Gameplay : MonoBehaviour
             String line = fileRead.ReadLine();
             for(int j = 0; j < sideLengthX; j++) board[j, i] = int.Parse(line[j].ToString());
         }
-        
-        //Get the tile dimensions (it's a square)
-        tileSideLength = tile.GetComponent<SpriteRenderer>().bounds.size.x;
-
-        //Determine the position of [0, 0] so board is centered
-        initialX = this.transform.position.x - (tileSideLength * sideLengthX / 2 - (tileSideLength / 2));
-        initialY = this.transform.position.y - (tileSideLength * sideLengthY / 2 - (tileSideLength / 2));
 
         //Draw the tiles
-        instantiateTiles(tileSideLength, initialX, initialY, board);
+        instantiateTiles(board);
 
-        //Draw the tokens
-        instantiateTokens(tileSideLength, initialX, initialY);
-
-        hasMovesRemaining();
-        
     }
 
-    void instantiateTiles(float tileSideLength, float initialX, float initialY, int[,] board){
+    public IEnumerator levelIntro(){
+        //Draw the board and tiles
+        drawBoard();
+        //Wait for the text to show
+        yield return new WaitUntil(() => IntroText.phase == 1);
+        //Draw the tokens
+        instantiateTokens();
+        yield return new WaitUntil(() => Token.tokensMoving == 0);
+        yield return new WaitUntil(() => IntroText.phase == 3);
+        enabled = true;
+    }
+
+    void instantiateTiles(int[,] board){
         tileGrid = new GameObject[sideLengthX, sideLengthY];
         for(int i = 0; i < sideLengthX; i++){
             for(int j = 0; j < sideLengthY; j++){
@@ -120,7 +130,7 @@ public class Gameplay : MonoBehaviour
         }
     }
 
-    void instantiateTokens(float tileSideLength, float initialX, float initialY){
+    void instantiateTokens(){
         
         tokenGrid = new GameObject[sideLengthX, sideLengthY];
         //SETUP FOR PREVENTING 3 IN A ROW
@@ -148,8 +158,8 @@ public class Gameplay : MonoBehaviour
                 if(tileGrid[i, j] == null) continue;
 
                 //Instantiate Tokens
-                GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * i), initialY + 
-                    (tileSideLength * j), 0), token.transform.rotation);
+                GameObject nextToken = Instantiate(token, new Vector3(initialX + (tileSideLength * i), topOfScreen + j + 1, 0), 
+                    token.transform.rotation);
 
                 //Determine token color
                 //Remove from list if applicable
@@ -181,6 +191,7 @@ public class Gameplay : MonoBehaviour
                 nextToken.GetComponent<Token>().setIndex(i, j);
                 nextToken.GetComponent<SpriteRenderer>().sortingOrder = 2;
                 nextToken.transform.parent = level.transform;
+                nextToken.GetComponent<Token>().setDrop();
                 tokenGrid[i, j] = nextToken;
 
             }
@@ -220,7 +231,11 @@ public class Gameplay : MonoBehaviour
                 if(tileGrid[i, j] == null) continue;
                 if(tokenGrid[i, j].GetComponent<Token>().findMatch()) matchExists = true;
             }
-        if(matchExists) StartCoroutine(destroyAndReplace());
+        if(matchExists) {
+            combo += 1;
+            StartCoroutine(destroyAndReplace());
+        }
+        else combo = 1;
         chainReactions--;
         if(tileCount == tilesCleared) Debug.Log("Clear!");
     }
@@ -243,14 +258,14 @@ public class Gameplay : MonoBehaviour
                 emptyCount++;
                 //Add to ability
                 AbilityExplode.abilityExplode.AddToBar();
+                AbilityShuffle.abilityShuffle.AddToBar();
             }
             else{ //Add this token's drop distance to the list
                 distances.Add(emptyCount);
             }
 
-        UpdateScore(emptyCount * 10);    
-
         }
+        UpdateScore(emptyCount * 10 * combo);
         //Shift tokens down
         for(int i = emptyCount; i > 0; i--){
             //Keep track/reset of the index in the distance list
@@ -305,6 +320,20 @@ public class Gameplay : MonoBehaviour
 
         columnsMoving--;
     }
+
+    // To shuffle the board
+    public void Shuffle() {
+        for (int x = 0; x < sideLengthX; x++) {
+            for (int y = 0; y < sideLengthY; y++) {
+                if ( !(tileGrid[x, y] == null) ){
+                    Destroy(tokenGrid[x, y]);
+                    tokenGrid[x, y] = null;
+                }
+            }
+        }
+        instantiateTokens();
+    }
+
 
     //These next 3 private methods are solely for the "No More Moves" algorithm
     public bool hasMovesRemaining() {
