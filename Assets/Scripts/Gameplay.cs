@@ -265,7 +265,7 @@ public class Gameplay : MonoBehaviour
             }
 
         }
-        UpdateScore(emptyCount * 10 * combo);
+        UpdateScore(emptyCount * 1 * combo);
         //Shift tokens down
         for(int i = emptyCount; i > 0; i--){
             //Keep track/reset of the index in the distance list

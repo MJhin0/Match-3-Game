@@ -1070,7 +1070,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 1842471f00ec25e4ba0bf95d787ecf3e, type: 3}
   - {fileID: 21300000, guid: c1ec9122e3bcf9e44b89dbf0b56de438, type: 3}
   - {fileID: 21300000, guid: d316fe7112205e84dad364041bb43c30, type: 3}
-  - {fileID: 21300000, guid: 3edd7307f2f4cb349a51b350e001ad09, type: 3}
+  - {fileID: 21300000, guid: 6245d83e17e4f1f49a33a822d9710195, type: 3}
   sideLengthX: 14
   sideLengthY: 12
   tile: {fileID: 9161258274682096526, guid: 61f172ecd7ee6d842a7fc0b667659860, type: 3}
