@@ -16,7 +16,7 @@ public class Gameplay : MonoBehaviour
     public static Gameplay level;
     //List of possible tokens
     public List<Sprite> tokenList = new List<Sprite>();
-    //The board dimensions (assuming square board) and top of screen
+    //The board dimensions and top of screen
     public int sideLengthX;
     public int sideLengthY;
     private float topOfScreen;
@@ -258,6 +258,7 @@ public class Gameplay : MonoBehaviour
                 emptyCount++;
                 //Add to ability
                 AbilityExplode.abilityExplode.AddToBar();
+                AbilityShuffle.abilityShuffle.AddToBar();
             }
             else{ //Add this token's drop distance to the list
                 distances.Add(emptyCount);
@@ -319,6 +320,20 @@ public class Gameplay : MonoBehaviour
 
         columnsMoving--;
     }
+
+    // To shuffle the board
+    public void Shuffle() {
+        for (int x = 0; x < sideLengthX; x++) {
+            for (int y = 0; y < sideLengthY; y++) {
+                if ( !(tileGrid[x, y] == null) ){
+                    Destroy(tokenGrid[x, y]);
+                    tokenGrid[x, y] = null;
+                }
+            }
+        }
+        instantiateTokens();
+    }
+
 
     //These next 3 private methods are solely for the "No More Moves" algorithm
     public bool hasMovesRemaining() {

@@ -107,7 +107,7 @@ public class Token : MonoBehaviour
                 lastSelected.Deselect();
                 Select();
                 return;
-            }
+        }
 
         //Swap array positions in the Gameplay object
         GameObject temp = Gameplay.level.tokenGrid[token.indexX, token.indexY];
