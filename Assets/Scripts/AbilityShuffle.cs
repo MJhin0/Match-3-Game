@@ -4,10 +4,10 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AbilityExplode : MonoBehaviour
+public class AbilityShuffle : MonoBehaviour
 {
     // Instance of the ability when other scripts need it
-    public static AbilityExplode abilityExplode;
+    public static AbilityShuffle abilityShuffle;
     public Image sprite;
 
     // Variables for if the specific ability is selected
@@ -17,8 +17,8 @@ public class AbilityExplode : MonoBehaviour
 
     // Variables for how much the ability is charged
     public int currentBar = 0;
-    private int maxBar = 50;
-    public bool activateExplode = false;
+    private int maxBar = 1;
+    public bool activateShuffle = false;
     private static Color activated = new Color(1f, 1f, 1f, 1f);
     private static Color deactivated = new Color(0.75f, 0.75f, 0.75f, 1f);
 
@@ -27,7 +27,7 @@ public class AbilityExplode : MonoBehaviour
     void Start()
     {
         // Get the component
-        abilityExplode = GetComponent<AbilityExplode>();
+        abilityShuffle = GetComponent<AbilityShuffle>();
         sprite = GetComponent<Image>();
         sprite.fillAmount = currentBar / maxBar;
         sprite.color = deactivated;
@@ -36,16 +36,23 @@ public class AbilityExplode : MonoBehaviour
     // Left-clicking on the ability
     void OnMouseDown() {
         if (!isSelected) {
-            if (activateExplode == true) {
+            if (activateShuffle == true) {
                 Select();
             }
         }
         else {
             Deselect();
         }
+        // For activating Shuffle Ability
+        if (activateShuffle == true) {
+            Gameplay.level.Shuffle();
+            Deselect();
+            DeactivateShuffle();
+        }
+
     }
 
-    // For when it is left-clicked on
+     // For when it is left-clicked on
     public void Select() {
         isSelected = true;
         sprite.color = selectFade;
@@ -55,23 +62,25 @@ public class AbilityExplode : MonoBehaviour
         sprite.color = deselectFade;
     }
 
-    // Depletes bar and deactivates ability, will be used in other scripts
-    public void DeactivateExplode() {
+    // Depletes bar and deactivates ability
+    public void DeactivateShuffle() {
         currentBar = 0;
-        activateExplode = false;
+        activateShuffle = false;
         sprite.color = deactivated;
     }
 
     // Adds to the gauge by 1, will be used in other scripts
     public void AddToBar() {
         currentBar++;
-        if (currentBar >= maxBar) sprite.color = activated;
+        if (currentBar >= maxBar) {
+            sprite.color = activated;
+        }
     }
 
     // Update is called once per frame
     void Update() {
         if (currentBar >= maxBar) {
-            activateExplode = true;
+            activateShuffle = true;
         }
         sprite.fillAmount = 1.0f * currentBar / maxBar;
     }
