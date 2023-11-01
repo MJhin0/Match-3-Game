@@ -62,7 +62,7 @@ public class Gameplay : MonoBehaviour
         topOfScreen = Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelHeight, Camera.main.nearClipPlane)).y;
 
         //Set board file, time and score
-        filePath = Application.streamingAssetsPath + "/levels/1_1.txt";      
+        filePath = Application.streamingAssetsPath + "/levels/1_4.txt";      
         UpdateTime();
         UpdateScore(0);
 
@@ -76,15 +76,15 @@ public class Gameplay : MonoBehaviour
         //Get the tile dimensions (it's a square)
         tileSideLength = tile.GetComponent<SpriteRenderer>().bounds.size.x;
 
-        //Determine the position of [0, 0] so board is centered
-        initialX = this.transform.position.x - (tileSideLength * sideLengthX / 2 - (tileSideLength / 2));
-        initialY = this.transform.position.y - (tileSideLength * sideLengthY / 2 - (tileSideLength / 2));
-
         //Open the text file and get dimensions
         StreamReader fileRead = new StreamReader(filePath);
         String[] dimensions = fileRead.ReadLine().Split(' ');
         sideLengthX = int.Parse(dimensions[0]);
         sideLengthY = int.Parse(dimensions[1]);
+
+        //Determine the position of [0, 0] so board is centered
+        initialX = this.transform.position.x - (tileSideLength * sideLengthX / 2 - (tileSideLength / 2));
+        initialY = this.transform.position.y - (tileSideLength * sideLengthY / 2 - (tileSideLength / 2));
         
         //Buffer file input
         fileRead.ReadLine();
@@ -197,6 +197,8 @@ public class Gameplay : MonoBehaviour
             }
         }
 
+        if(!hasMovesRemaining()) Shuffle();
+
     }
 
     public void executeMatch(){
@@ -221,7 +223,7 @@ public class Gameplay : MonoBehaviour
 
         //Wait until columns are done moving
         yield return new WaitUntil(() => columnsMoving <= 0);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => Token.tokensMoving == 0);
 
         //After everything is refilled, check for matches again for combos
         bool matchExists = false;
@@ -235,7 +237,10 @@ public class Gameplay : MonoBehaviour
             combo += 1;
             StartCoroutine(destroyAndReplace());
         }
-        else combo = 1;
+        else{
+            combo = 1;
+            if(!hasMovesRemaining()) Shuffle();
+        }
         chainReactions--;
         if(tileCount == tilesCleared) Debug.Log("Clear!");
     }
@@ -333,7 +338,6 @@ public class Gameplay : MonoBehaviour
         }
         instantiateTokens();
     }
-
 
     //These next 3 private methods are solely for the "No More Moves" algorithm
     public bool hasMovesRemaining() {
@@ -436,19 +440,19 @@ public class Gameplay : MonoBehaviour
             remainingTime -= Time.deltaTime;
             UpdateTime();
         }
-        else if (remainingTime <= 0 && enabled)
-        {
-            Debug.Log("Time's up! Final Score: " + score);
-            SceneManager.LoadScene("EndScene"); // Load the end screen scene
-            return;
-        }
+        // else if (remainingTime <= 0 && enabled)
+        // {
+        //     Debug.Log("Time's up! Final Score: " + score);
+        //     SceneManager.LoadScene("EndScene"); // Load the end screen scene
+        //     return;
+        // }
 
-        if (score >= 100000)
-        {
-            Debug.Log("You've reached 100000 points!");
-            SceneManager.LoadScene("EndScene"); // Load the end screen scene
-            return;
-        }
+        // if (score >= 100000)
+        // {
+        //     Debug.Log("You've reached 100000 points!");
+        //     SceneManager.LoadScene("EndScene"); // Load the end screen scene
+        //     return;
+        // }
 
     }
 }
