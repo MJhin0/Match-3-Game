@@ -97,7 +97,7 @@ public class Token : MonoBehaviour
             else {
                 SwapTokens(lastSelected);
                 StartCoroutine(AfterSwap());
-                }
+            }
         }
     }
     
