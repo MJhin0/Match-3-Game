@@ -23,6 +23,7 @@ public class Tile : MonoBehaviour
     public void breakLayer(){
         if(matchedState == 0) return;
         else{
+            Gameplay.level.UpdateScore(matchedState * 10);
             matchedState--;
             gameObject.GetComponent<SpriteRenderer>().sprite = tileList[matchedState];
             if(matchedState == 0) Gameplay.level.tilesCleared++;

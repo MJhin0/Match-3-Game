@@ -126,14 +126,6 @@ public class Token : MonoBehaviour
                 return;
         }
 
-        // Return if the swap does not create a match, no need to swap
-        if (    )
-        // Could use SwapTokens in Gameplay, does not actually swap the tokens
-
-
-
-        
-
         //Swap array positions in the Gameplay object
         GameObject temp = Gameplay.level.tokenGrid[token.indexX, token.indexY];
         Gameplay.level.tokenGrid[token.indexX, token.indexY] = Gameplay.level.tokenGrid[swappedToken.indexX, swappedToken.indexY];

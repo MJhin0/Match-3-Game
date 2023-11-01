@@ -55,6 +55,9 @@ public class AbilityExplode : MonoBehaviour
         sprite.color = deselectFade;
     }
 
+    // Maybe add a right click to show how much the gauge is filled? Could be ambiguous when almost filled.
+
+
     // Depletes bar and deactivates ability, will be used in other scripts
     public void DeactivateExplode() {
         currentBar = 0;
@@ -65,7 +68,7 @@ public class AbilityExplode : MonoBehaviour
     // Adds to the gauge by 1, will be used in other scripts
     public void AddToBar() {
         currentBar++;
-        if (currentBar >= maxBar) sprite.color = activated;
+        if(currentBar >= maxBar) sprite.color = activated;
     }
 
     // Update is called once per frame
