@@ -91,12 +91,29 @@ public class Token : MonoBehaviour
             AbilityExplode.abilityExplode.DeactivateExplode();
         }
 
-        if(isSelected) Deselect();
+        if (isSelected) Deselect();
         else{
-            if(lastSelected == null) Select();
-            else{
+            if (lastSelected == null) Select();
+            else {
                 SwapTokens(lastSelected);
+                StartCoroutine(AfterSwap());
             }
+        }
+    }
+    
+
+    public IEnumerator AfterSwap() {
+        yield return new WaitUntil(() => tokensMoving == 0);
+        bool match1 = findMatch();
+        bool match2 = lastSelected.findMatch();
+        if (match1 || match2) {
+            lastSelected.Deselect();
+            Gameplay.level.executeMatch();
+        }
+        else {
+            // Unswap if not matching
+            SwapTokens(lastSelected);
+            lastSelected.Deselect();
         }
     }
 
@@ -123,15 +140,6 @@ public class Token : MonoBehaviour
         //Swap in physical location
         setTarget();
         swappedToken.setTarget();
-
-        //Check for matches
-        bool match1 = findMatch();
-        bool match2 = lastSelected.findMatch();
-        if(match1 || match2) {
-            lastSelected.Deselect();
-            Gameplay.level.executeMatch();
-        }else lastSelected.Deselect();
-
     }
 
     public void move(){
