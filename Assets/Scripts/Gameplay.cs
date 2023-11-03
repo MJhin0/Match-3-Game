@@ -447,7 +447,7 @@ public class Gameplay : MonoBehaviour
         remainingTime = 0;
         UpdateTime();
         //Announce Loss
-        Debug.Log("Time's Up!");
+        AnnounceText.sendText("Time's Up!", true);
         yield return new WaitForSeconds(3.0f);
         SceneManager.LoadScene("Gameplay");
     }
