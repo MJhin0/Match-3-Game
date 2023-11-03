@@ -50,11 +50,12 @@ public class Gameplay : MonoBehaviour
     public TextMeshProUGUI scoreText;
 
     //Variable for if Intro is playing
-    public bool introFinished = false;
+    public bool allowSwaps = false;
 
     // Start is called before the first frame update
     void Start()
     {
+        IntroText.phase = 0;
         enabled = false;
         //Get the component
         level = GetComponent<Gameplay>();
@@ -110,6 +111,7 @@ public class Gameplay : MonoBehaviour
         yield return new WaitUntil(() => Token.tokensMoving == 0);
         yield return new WaitUntil(() => IntroText.phase == 3);
         enabled = true;
+        allowSwaps = true;
     }
 
     void instantiateTiles(int[,] board){
@@ -242,7 +244,13 @@ public class Gameplay : MonoBehaviour
             if(!hasMovesRemaining()) Shuffle();
         }
         chainReactions--;
-        if(tileCount == tilesCleared) Debug.Log("Clear!");
+        //Check for win or lose conditions
+        if(tileCount == tilesCleared) {
+            Debug.Log("Clear!");
+        }
+        if(remainingTime <= 0){
+            StartCoroutine(outOfTime());
+        }
     }
 
     private IEnumerator replace(int x, int y){
@@ -432,6 +440,18 @@ public class Gameplay : MonoBehaviour
         timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
+    private IEnumerator outOfTime(){
+        //Disable level
+        enabled = false;
+        allowSwaps = false;
+        remainingTime = 0;
+        UpdateTime();
+        //Announce Loss
+        Debug.Log("Time's Up!");
+        yield return new WaitForSeconds(3.0f);
+        SceneManager.LoadScene("Gameplay");
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -440,19 +460,13 @@ public class Gameplay : MonoBehaviour
             remainingTime -= Time.deltaTime;
             UpdateTime();
         }
-        // else if (remainingTime <= 0 && enabled)
-        // {
-        //     Debug.Log("Time's up! Final Score: " + score);
-        //     SceneManager.LoadScene("EndScene"); // Load the end screen scene
-        //     return;
-        // }
+        else if(remainingTime <= 0 && chainReactions == 0 && allowSwaps){
+            StartCoroutine(outOfTime());
+        }
 
-        // if (score >= 100000)
-        // {
-        //     Debug.Log("You've reached 100000 points!");
-        //     SceneManager.LoadScene("EndScene"); // Load the end screen scene
-        //     return;
-        // }
-
+        if(remainingTime < 0) {
+            remainingTime = 0;
+            UpdateTime();
+        }
     }
 }
