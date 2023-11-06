@@ -6,6 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using Unity.VisualScripting.AssemblyQualifiedNameParser;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -63,7 +64,7 @@ public class Gameplay : MonoBehaviour
         topOfScreen = Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelHeight, Camera.main.nearClipPlane)).y;
 
         //Set board file, time and score
-        filePath = Application.streamingAssetsPath + "/levels/1_4.txt";      
+        filePath = Application.streamingAssetsPath + "/levels/1_3.txt";      
         UpdateTime();
         UpdateScore(0);
 
@@ -86,7 +87,7 @@ public class Gameplay : MonoBehaviour
         //Determine the position of [0, 0] so board is centered
         initialX = this.transform.position.x - (tileSideLength * sideLengthX / 2 - (tileSideLength / 2));
         initialY = this.transform.position.y - (tileSideLength * sideLengthY / 2 - (tileSideLength / 2));
-        
+                
         //Buffer file input
         fileRead.ReadLine();
         //Create Board of ints
@@ -108,7 +109,7 @@ public class Gameplay : MonoBehaviour
         yield return new WaitUntil(() => IntroText.phase == 1);
         //Draw the tokens
         instantiateTokens();
-        yield return new WaitUntil(() => Token.tokensMoving == 0);
+                yield return new WaitUntil(() => Token.tokensMoving == 0);
         yield return new WaitUntil(() => IntroText.phase == 3);
         enabled = true;
         allowSwaps = true;
@@ -134,6 +135,7 @@ public class Gameplay : MonoBehaviour
 
     void instantiateTokens(){
         
+        Token.tokensMoving = 0;
         tokenGrid = new GameObject[sideLengthX, sideLengthY];
         //SETUP FOR PREVENTING 3 IN A ROW
         //The last element below or to the left to refer to
@@ -246,7 +248,7 @@ public class Gameplay : MonoBehaviour
         chainReactions--;
         //Check for win or lose conditions
         if(tileCount == tilesCleared) {
-            Debug.Log("Clear!");
+            StartCoroutine(levelComplete());
         }
         if(remainingTime <= 0){
             StartCoroutine(outOfTime());
@@ -448,6 +450,18 @@ public class Gameplay : MonoBehaviour
         UpdateTime();
         //Announce Loss
         AnnounceText.sendText("Time's Up!", true);
+        yield return new WaitForSeconds(3.0f);
+        SceneManager.LoadScene("Gameplay");
+    }
+
+    private IEnumerator levelComplete(){
+        //Disable level
+        enabled = false;
+        allowSwaps = false;
+        remainingTime = (float) Math.Floor(remainingTime);
+        UpdateTime();
+        //Announce win
+        AnnounceText.sendText("Level Complete!", true);
         yield return new WaitForSeconds(3.0f);
         SceneManager.LoadScene("Gameplay");
     }

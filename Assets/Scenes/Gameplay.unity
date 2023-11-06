@@ -1065,7 +1065,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ce643b1eec376c48b185eeb7c364a47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aText: {fileID: 0}
   tokenList:
   - {fileID: 21300000, guid: 0aa3572bd8a149f4b9be3788386897f9, type: 3}
   - {fileID: 21300000, guid: c96c94412dc8e0a47bdf00d5935c46f9, type: 3}
