@@ -1085,7 +1085,7 @@ MonoBehaviour:
   chainReactions: 0
   columnsMoving: 0
   combo: 1
-  remainingTime: 10
+  remainingTime: 120
   timeText: {fileID: 475348930}
   score: 0
   scoreText: {fileID: 746149145}

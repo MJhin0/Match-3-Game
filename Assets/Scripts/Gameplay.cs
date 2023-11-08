@@ -243,16 +243,18 @@ public class Gameplay : MonoBehaviour
         }
         else{
             combo = 1;
+            //Check for win or lose conditions
+            if(tileCount == tilesCleared) {
+                StartCoroutine(levelComplete());
+                yield break;
+            }
+            if(remainingTime <= 0){
+                StartCoroutine(outOfTime());
+                yield break;
+            }
             if(!hasMovesRemaining()) Shuffle();
         }
         chainReactions--;
-        //Check for win or lose conditions
-        if(tileCount == tilesCleared) {
-            StartCoroutine(levelComplete());
-        }
-        if(remainingTime <= 0){
-            StartCoroutine(outOfTime());
-        }
     }
 
     private IEnumerator replace(int x, int y){
