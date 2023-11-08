@@ -432,27 +432,46 @@ public class Gameplay : MonoBehaviour
         timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
+    private void UnlockLevel()
+    {
+        int currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
+        int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1);
+
+    // Only unlock the next level if it's not already unlocked
+        if (currentLevelIndex >= unlockedLevel)
+        {
+            PlayerPrefs.SetInt("UnlockedLevel", currentLevelIndex);
+            PlayerPrefs.Save();
+        }
+
+        //Debug.Log("Current Level: " + currentLevelIndex);
+        //Debug.Log("Levels Unlocked: " + (currentLevelIndex));
+}
+
+
     // Update is called once per frame
     void Update()
     {
         if (remainingTime > 0)
         {
             remainingTime -= Time.deltaTime;
-            UpdateTime();
+            //UpdateTime();
         }
-        // else if (remainingTime <= 0 && enabled)
-        // {
-        //     Debug.Log("Time's up! Final Score: " + score);
-        //     SceneManager.LoadScene("EndScene"); // Load the end screen scene
-        //     return;
-        // }
+        else if (remainingTime <= 0 && enabled)
+        {
+             Debug.Log("Time's up! Final Score: " + score);
+             UnlockLevel();
+             SceneManager.LoadScene("LevelManager"); // Load the end screen scene
+             return;
+        }
 
-        // if (score >= 100000)
-        // {
-        //     Debug.Log("You've reached 100000 points!");
-        //     SceneManager.LoadScene("EndScene"); // Load the end screen scene
-        //     return;
-        // }
+        if (score >= 100)
+        {
+             Debug.Log("You've reached 100 points!");
+             UnlockLevel();
+             SceneManager.LoadScene("LevelManager"); // Load the end screen scene
+             return;
+        }
 
     }
 }
