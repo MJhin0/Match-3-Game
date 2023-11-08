@@ -30,6 +30,7 @@ public class IntroText : MonoBehaviour
         switch(phase){
             //Expand text
             case 0:
+                levelText.text = "Earth " + PlayerPrefs.GetInt("SelectedLevel", 1);
                 levelText.transform.localScale += scaleChange0;
                 if(levelText.transform.localScale.x >= 1) phase++;
                 break;

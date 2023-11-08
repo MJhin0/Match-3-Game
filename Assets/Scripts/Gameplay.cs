@@ -465,7 +465,7 @@ public class Gameplay : MonoBehaviour
         //Announce win
         AnnounceText.sendText("Level Complete!", true);
         yield return new WaitForSeconds(3.0f);
-        SceneManager.LoadScene("Gameplay");
+        UnlockLevel();
     }
 
     private void UnlockLevel()
@@ -479,6 +479,8 @@ public class Gameplay : MonoBehaviour
             PlayerPrefs.SetInt("UnlockedLevel", currentLevelIndex + 1);
             PlayerPrefs.Save();
         }
+
+        SceneManager.LoadScene("LevelManager");
 
         //Debug.Log("Current Level: " + currentLevelIndex);
         //Debug.Log("Levels Unlocked: " + (currentLevelIndex));
