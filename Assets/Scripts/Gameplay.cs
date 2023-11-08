@@ -64,7 +64,7 @@ public class Gameplay : MonoBehaviour
         topOfScreen = Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelHeight, Camera.main.nearClipPlane)).y;
 
         //Set board file, time and score
-        filePath = Application.streamingAssetsPath + "/levels/1_3.txt";      
+        filePath = Application.streamingAssetsPath + "/levels/1_" +  PlayerPrefs.GetInt("SelectedLevel", 1) + ".txt";      
         UpdateTime();
         UpdateScore(0);
 
@@ -470,13 +470,13 @@ public class Gameplay : MonoBehaviour
 
     private void UnlockLevel()
     {
-        int currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
+        int currentLevelIndex = PlayerPrefs.GetInt("SelectedLevel", 1);
         int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1);
 
-    // Only unlock the next level if it's not already unlocked
+        // Only unlock the next level if it's not already unlocked
         if (currentLevelIndex >= unlockedLevel)
         {
-            PlayerPrefs.SetInt("UnlockedLevel", currentLevelIndex);
+            PlayerPrefs.SetInt("UnlockedLevel", currentLevelIndex + 1);
             PlayerPrefs.Save();
         }
 

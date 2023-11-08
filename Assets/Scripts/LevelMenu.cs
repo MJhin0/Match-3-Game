@@ -42,7 +42,8 @@ public class LevelMenu : MonoBehaviour
     }
 
     public void OpenLevel( int a){
-        string levelName = "Level " + a;
-        SceneManager.LoadScene(levelName);
+        PlayerPrefs.SetInt("SelectedLevel", a);
+        PlayerPrefs.Save();
+        SceneManager.LoadScene("Gameplay");
     }
 }
