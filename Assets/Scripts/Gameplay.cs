@@ -468,6 +468,23 @@ public class Gameplay : MonoBehaviour
         SceneManager.LoadScene("Gameplay");
     }
 
+    private void UnlockLevel()
+    {
+        int currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
+        int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1);
+
+    // Only unlock the next level if it's not already unlocked
+        if (currentLevelIndex >= unlockedLevel)
+        {
+            PlayerPrefs.SetInt("UnlockedLevel", currentLevelIndex);
+            PlayerPrefs.Save();
+        }
+
+        //Debug.Log("Current Level: " + currentLevelIndex);
+        //Debug.Log("Levels Unlocked: " + (currentLevelIndex));
+    }
+
+
     // Update is called once per frame
     void Update()
     {
