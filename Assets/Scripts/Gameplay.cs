@@ -53,6 +53,11 @@ public class Gameplay : MonoBehaviour
     //Variable for if Intro is playing
     public bool allowSwaps = false;
 
+    //Component for end of level UI
+    public GameObject levelEndRetry;
+    public GameObject levelEndQuit;
+    public GameObject levelEndContinue;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -96,6 +101,12 @@ public class Gameplay : MonoBehaviour
             String line = fileRead.ReadLine();
             for(int j = 0; j < sideLengthX; j++) board[j, i] = int.Parse(line[j].ToString());
         }
+
+        //Buffer file input
+        fileRead.ReadLine();
+        //Read time limit
+        remainingTime = int.Parse(fileRead.ReadLine());
+        UpdateTime();
 
         //Draw the tiles
         instantiateTiles(board);
@@ -452,8 +463,9 @@ public class Gameplay : MonoBehaviour
         UpdateTime();
         //Announce Loss
         AnnounceText.sendText("Time's Up!", true);
-        yield return new WaitForSeconds(3.0f);
-        SceneManager.LoadScene("Gameplay");
+        yield return new WaitForSeconds(1.0f);
+        levelEndRetry.SetActive(true);
+        levelEndQuit.SetActive(true);
     }
 
     private IEnumerator levelComplete(){
@@ -464,28 +476,10 @@ public class Gameplay : MonoBehaviour
         UpdateTime();
         //Announce win
         AnnounceText.sendText("Level Complete!", true);
-        yield return new WaitForSeconds(3.0f);
-        UnlockLevel();
+        yield return new WaitForSeconds(1.0f);
+        levelEndRetry.SetActive(true);
+        levelEndContinue.SetActive(true);
     }
-
-    private void UnlockLevel()
-    {
-        int currentLevelIndex = PlayerPrefs.GetInt("SelectedLevel", 1);
-        int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1);
-
-        // Only unlock the next level if it's not already unlocked
-        if (currentLevelIndex >= unlockedLevel)
-        {
-            PlayerPrefs.SetInt("UnlockedLevel", currentLevelIndex + 1);
-            PlayerPrefs.Save();
-        }
-
-        SceneManager.LoadScene("LevelManager");
-
-        //Debug.Log("Current Level: " + currentLevelIndex);
-        //Debug.Log("Levels Unlocked: " + (currentLevelIndex));
-    }
-
 
     // Update is called once per frame
     void Update()
