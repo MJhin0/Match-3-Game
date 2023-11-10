@@ -17,10 +17,13 @@ public class AbilityShuffle : MonoBehaviour
 
     // Variables for how much the ability is charged
     public int currentBar = 0;
-    private int maxBar = 10;
+    private int maxBar = 20;
     public bool activateShuffle = false;
     private static Color activated = new Color(1f, 1f, 1f, 1f);
     private static Color deactivated = new Color(0.75f, 0.75f, 0.75f, 1f);
+
+    // SFX
+    public AudioSource gust;
 
 
     // Start is called before the first frame update
@@ -45,6 +48,7 @@ public class AbilityShuffle : MonoBehaviour
         }
         // For activating Shuffle Ability
         if (activateShuffle == true) {
+            PlayShuffle();
             Gameplay.level.Shuffle();
             Deselect();
             DeactivateShuffle();
@@ -75,6 +79,11 @@ public class AbilityShuffle : MonoBehaviour
         if (currentBar >= maxBar) {
             sprite.color = activated;
         }
+    }
+
+    // Plays SFX when used
+    public void PlayShuffle() {
+        gust.Play();
     }
 
     // Update is called once per frame
