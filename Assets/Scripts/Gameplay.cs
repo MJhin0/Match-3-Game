@@ -323,6 +323,7 @@ public class Gameplay : MonoBehaviour
 
     // To shuffle the board
     public void Shuffle() {
+        AbilityShuffle.abilityShuffle.PlayShuffle();
         for (int x = 0; x < sideLengthX; x++) {
             for (int y = 0; y < sideLengthY; y++) {
                 if ( !(tileGrid[x, y] == null) ){

@@ -48,7 +48,6 @@ public class AbilityShuffle : MonoBehaviour
         }
         // For activating Shuffle Ability
         if (activateShuffle == true) {
-            PlayShuffle();
             Gameplay.level.Shuffle();
             Deselect();
             DeactivateShuffle();
