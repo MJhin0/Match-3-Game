@@ -84,6 +84,7 @@ public class Token : MonoBehaviour
                 }
             }
             // Explodes the tokens.
+            AbilityExplode.abilityExplode.PlayExplode();
             destroyTokens(explodingList);
             Gameplay.level.executeMatch();
             // Deactivates the Explode Ability.
