@@ -6,6 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using Unity.VisualScripting.AssemblyQualifiedNameParser;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -50,11 +51,17 @@ public class Gameplay : MonoBehaviour
     public TextMeshProUGUI scoreText;
 
     //Variable for if Intro is playing
-    public bool introFinished = false;
+    public bool allowSwaps = false;
+
+    //Component for end of level UI
+    public GameObject levelEndRetry;
+    public GameObject levelEndQuit;
+    public GameObject levelEndContinue;
 
     // Start is called before the first frame update
     void Start()
     {
+        IntroText.phase = 0;
         enabled = false;
         //Get the component
         level = GetComponent<Gameplay>();
@@ -62,7 +69,7 @@ public class Gameplay : MonoBehaviour
         topOfScreen = Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelHeight, Camera.main.nearClipPlane)).y;
 
         //Set board file, time and score
-        filePath = Application.streamingAssetsPath + "/levels/1_1.txt";      
+        filePath = Application.streamingAssetsPath + "/levels/1_" +  PlayerPrefs.GetInt("SelectedLevel", 1) + ".txt";      
         UpdateTime();
         UpdateScore(0);
 
@@ -76,16 +83,16 @@ public class Gameplay : MonoBehaviour
         //Get the tile dimensions (it's a square)
         tileSideLength = tile.GetComponent<SpriteRenderer>().bounds.size.x;
 
-        //Determine the position of [0, 0] so board is centered
-        initialX = this.transform.position.x - (tileSideLength * sideLengthX / 2 - (tileSideLength / 2));
-        initialY = this.transform.position.y - (tileSideLength * sideLengthY / 2 - (tileSideLength / 2));
-
         //Open the text file and get dimensions
         StreamReader fileRead = new StreamReader(filePath);
         String[] dimensions = fileRead.ReadLine().Split(' ');
         sideLengthX = int.Parse(dimensions[0]);
         sideLengthY = int.Parse(dimensions[1]);
-        
+
+        //Determine the position of [0, 0] so board is centered
+        initialX = this.transform.position.x - (tileSideLength * sideLengthX / 2 - (tileSideLength / 2));
+        initialY = this.transform.position.y - (tileSideLength * sideLengthY / 2 - (tileSideLength / 2));
+                
         //Buffer file input
         fileRead.ReadLine();
         //Create Board of ints
@@ -94,6 +101,12 @@ public class Gameplay : MonoBehaviour
             String line = fileRead.ReadLine();
             for(int j = 0; j < sideLengthX; j++) board[j, i] = int.Parse(line[j].ToString());
         }
+
+        //Buffer file input
+        fileRead.ReadLine();
+        //Read time limit
+        remainingTime = int.Parse(fileRead.ReadLine());
+        UpdateTime();
 
         //Draw the tiles
         instantiateTiles(board);
@@ -107,9 +120,10 @@ public class Gameplay : MonoBehaviour
         yield return new WaitUntil(() => IntroText.phase == 1);
         //Draw the tokens
         instantiateTokens();
-        yield return new WaitUntil(() => Token.tokensMoving == 0);
+                yield return new WaitUntil(() => Token.tokensMoving == 0);
         yield return new WaitUntil(() => IntroText.phase == 3);
         enabled = true;
+        allowSwaps = true;
     }
 
     void instantiateTiles(int[,] board){
@@ -132,6 +146,7 @@ public class Gameplay : MonoBehaviour
 
     void instantiateTokens(){
         
+        Token.tokensMoving = 0;
         tokenGrid = new GameObject[sideLengthX, sideLengthY];
         //SETUP FOR PREVENTING 3 IN A ROW
         //The last element below or to the left to refer to
@@ -197,6 +212,8 @@ public class Gameplay : MonoBehaviour
             }
         }
 
+        if(!hasMovesRemaining()) Shuffle();
+
     }
 
     public void executeMatch(){
@@ -221,7 +238,7 @@ public class Gameplay : MonoBehaviour
 
         //Wait until columns are done moving
         yield return new WaitUntil(() => columnsMoving <= 0);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => Token.tokensMoving == 0);
 
         //After everything is refilled, check for matches again for combos
         bool matchExists = false;
@@ -235,9 +252,20 @@ public class Gameplay : MonoBehaviour
             combo += 1;
             StartCoroutine(destroyAndReplace());
         }
-        else combo = 1;
+        else{
+            combo = 1;
+            //Check for win or lose conditions
+            if(tileCount == tilesCleared) {
+                StartCoroutine(levelComplete());
+                yield break;
+            }
+            if(remainingTime <= 0){
+                StartCoroutine(outOfTime());
+                yield break;
+            }
+            if(!hasMovesRemaining()) Shuffle();
+        }
         chainReactions--;
-        if(tileCount == tilesCleared) Debug.Log("Clear!");
     }
 
     private IEnumerator replace(int x, int y){
@@ -335,7 +363,6 @@ public class Gameplay : MonoBehaviour
         instantiateTokens();
     }
 
-
     //These next 3 private methods are solely for the "No More Moves" algorithm
     public bool hasMovesRemaining() {
 
@@ -429,6 +456,32 @@ public class Gameplay : MonoBehaviour
         timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
+    private IEnumerator outOfTime(){
+        //Disable level
+        enabled = false;
+        allowSwaps = false;
+        remainingTime = 0;
+        UpdateTime();
+        //Announce Loss
+        AnnounceText.sendText("Time's Up!", true);
+        yield return new WaitForSeconds(1.0f);
+        levelEndRetry.SetActive(true);
+        levelEndQuit.SetActive(true);
+    }
+
+    private IEnumerator levelComplete(){
+        //Disable level
+        enabled = false;
+        allowSwaps = false;
+        remainingTime = (float) Math.Floor(remainingTime);
+        UpdateTime();
+        //Announce win
+        AnnounceText.sendText("Level Complete!", true);
+        yield return new WaitForSeconds(1.0f);
+        levelEndRetry.SetActive(true);
+        levelEndContinue.SetActive(true);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -437,19 +490,13 @@ public class Gameplay : MonoBehaviour
             remainingTime -= Time.deltaTime;
             UpdateTime();
         }
-        else if (remainingTime <= 0 && enabled)
-        {
-            Debug.Log("Time's up! Final Score: " + score);
-            SceneManager.LoadScene("EndScene"); // Load the end screen scene
-            return;
+        else if(remainingTime <= 0 && chainReactions == 0 && allowSwaps){
+            StartCoroutine(outOfTime());
         }
 
-        if (score >= 100000)
-        {
-            Debug.Log("You've reached 100000 points!");
-            SceneManager.LoadScene("EndScene"); // Load the end screen scene
-            return;
+        if(remainingTime < 0) {
+            remainingTime = 0;
+            UpdateTime();
         }
-
     }
 }
