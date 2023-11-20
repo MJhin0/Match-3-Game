@@ -96,8 +96,7 @@ public class Token : MonoBehaviour
         else{
             if (lastSelected == null) Select();
             else {
-                SwapTokens(lastSelected);
-                StartCoroutine(AfterSwap());
+                if(SwapTokens(lastSelected)) StartCoroutine(AfterSwap());
             }
         }
     }
@@ -118,13 +117,14 @@ public class Token : MonoBehaviour
         }
     }
 
-    public void SwapTokens(Token swappedToken){
+    //Returns if a swap occurs
+    public bool SwapTokens(Token swappedToken){
         //Return if they are the same color or not adjacent, no need to swap
         if(token.type == swappedToken.type || 
             (Mathf.Abs(token.indexX - swappedToken.indexX) + Mathf.Abs(token.indexY - swappedToken.indexY) > 1)) {
                 lastSelected.Deselect();
                 Select();
-                return;
+                return false;
         }
 
         //Swap array positions in the Gameplay object
@@ -141,6 +141,7 @@ public class Token : MonoBehaviour
         //Swap in physical location
         setTarget();
         swappedToken.setTarget();
+        return true;
     }
 
     public void move(){
