@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Android;
 using UnityEngine.SceneManagement;
 
-public class EndLevelActions : MonoBehaviour
+public class LevelButtonActions : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -41,4 +42,21 @@ public class EndLevelActions : MonoBehaviour
 
         SceneManager.LoadScene("LevelManager");
     }
+
+    //Pause level
+    public void pause(){
+        //Pause
+        if(!Gameplay.level.paused){
+            Gameplay.level.paused = true;
+            Gameplay.level.enabled = false;
+            Gameplay.level.allowSwaps = false;
+        }
+        //Unpause
+        else{
+            Gameplay.level.paused = false;
+            Gameplay.level.enabled = true;
+            Gameplay.level.allowSwaps = true;
+        }
+    }
+
 }

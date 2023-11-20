@@ -67,7 +67,7 @@ public class Token : MonoBehaviour
 
     //Selects/Deselects tokens
     void OnMouseDown() {
-        if(Gameplay.level.chainReactions > 0 || tokensMoving > 0 || !Gameplay.level.allowSwaps) return;
+        if(!Gameplay.level.allowSwaps) return;
         
         // For the Explode Ability, needs to left-click on a token.
         if (AbilityExplode.abilityExplode.isSelected == true) {

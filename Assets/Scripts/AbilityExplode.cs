@@ -38,6 +38,8 @@ public class AbilityExplode : MonoBehaviour
 
     // Left-clicking on the ability
     void OnMouseDown() {
+        //Return if no swaps allowed
+        if(!Gameplay.level.allowSwaps) return;
         if (!isSelected) {
             if (activateExplode == true) {
                 Select();

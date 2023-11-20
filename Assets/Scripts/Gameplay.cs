@@ -52,6 +52,7 @@ public class Gameplay : MonoBehaviour
 
     //Variable for if Intro is playing
     public bool allowSwaps = false;
+    public bool paused = false;
 
     //Component for end of level UI
     public GameObject levelEndRetry;
@@ -485,6 +486,9 @@ public class Gameplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        allowSwaps = !(chainReactions > 0 || Token.tokensMoving > 0);
+
         if (remainingTime > 0)
         {
             remainingTime -= Time.deltaTime;
