@@ -54,10 +54,12 @@ public class Gameplay : MonoBehaviour
     public bool allowSwaps = false;
     public bool paused = false;
 
-    //Component for end of level UI
+    //Components for button UI
     public GameObject levelEndRetry;
     public GameObject levelEndQuit;
     public GameObject levelEndContinue;
+    public GameObject resumeButton;
+    public GameObject pauseText;
 
     // Start is called before the first frame update
     void Start()

@@ -47,16 +47,41 @@ public class LevelButtonActions : MonoBehaviour
     public void pause(){
         //Pause
         if(!Gameplay.level.paused){
+            //Disable game action
             Gameplay.level.paused = true;
             Gameplay.level.enabled = false;
             Gameplay.level.allowSwaps = false;
+            //Show text and buttons
+            Gameplay.level.pauseText.SetActive(true);
+            Gameplay.level.levelEndRetry.SetActive(true);
+            Gameplay.level.levelEndQuit.SetActive(true);
+            Gameplay.level.resumeButton.SetActive(true);
         }
         //Unpause
         else{
+            //Enable game action
             Gameplay.level.paused = false;
             Gameplay.level.enabled = true;
             Gameplay.level.allowSwaps = true;
+            //Hide text and buttons
+            Gameplay.level.pauseText.SetActive(false);
+            Gameplay.level.levelEndRetry.SetActive(false);
+            Gameplay.level.levelEndQuit.SetActive(false);
+            Gameplay.level.resumeButton.SetActive(false);
         }
+    }
+
+    //Unpause
+    public void resume(){
+        //Enable game action
+            Gameplay.level.paused = false;
+            Gameplay.level.enabled = true;
+            Gameplay.level.allowSwaps = true;
+            //Hide text and buttons
+            Gameplay.level.pauseText.SetActive(false);
+            Gameplay.level.levelEndRetry.SetActive(false);
+            Gameplay.level.levelEndQuit.SetActive(false);
+            Gameplay.level.resumeButton.SetActive(false);
     }
 
 }
