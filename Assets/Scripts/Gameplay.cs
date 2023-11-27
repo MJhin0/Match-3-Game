@@ -52,11 +52,14 @@ public class Gameplay : MonoBehaviour
 
     //Variable for if Intro is playing
     public bool allowSwaps = false;
+    public bool paused = false;
 
-    //Component for end of level UI
+    //Components for button UI
     public GameObject levelEndRetry;
     public GameObject levelEndQuit;
     public GameObject levelEndContinue;
+    public GameObject resumeButton;
+    public GameObject pauseText;
 
     // Start is called before the first frame update
     void Start()
@@ -351,6 +354,7 @@ public class Gameplay : MonoBehaviour
 
     // To shuffle the board
     public void Shuffle() {
+        AbilityShuffle.abilityShuffle.PlayShuffle();
         for (int x = 0; x < sideLengthX; x++) {
             for (int y = 0; y < sideLengthY; y++) {
                 if ( !(tileGrid[x, y] == null) ){
@@ -484,6 +488,9 @@ public class Gameplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        allowSwaps = !(chainReactions > 0 || Token.tokensMoving > 0);
+
         if (remainingTime > 0)
         {
             remainingTime -= Time.deltaTime;

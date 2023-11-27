@@ -22,6 +22,9 @@ public class AbilityExplode : MonoBehaviour
     private static Color activated = new Color(1f, 1f, 1f, 1f);
     private static Color deactivated = new Color(0.75f, 0.75f, 0.75f, 1f);
 
+    // SFX
+    public AudioSource explosion;
+
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +38,8 @@ public class AbilityExplode : MonoBehaviour
 
     // Left-clicking on the ability
     void OnMouseDown() {
+        //Return if no swaps allowed
+        if(!Gameplay.level.allowSwaps) return;
         if (!isSelected) {
             if (activateExplode == true) {
                 Select();
@@ -55,9 +60,6 @@ public class AbilityExplode : MonoBehaviour
         sprite.color = deselectFade;
     }
 
-    // Maybe add a right click to show how much the gauge is filled? Could be ambiguous when almost filled.
-
-
     // Depletes bar and deactivates ability, will be used in other scripts
     public void DeactivateExplode() {
         currentBar = 0;
@@ -69,6 +71,11 @@ public class AbilityExplode : MonoBehaviour
     public void AddToBar() {
         currentBar++;
         if(currentBar >= maxBar) sprite.color = activated;
+    }
+
+    // Plays SFX when used
+    public void PlayExplode() {
+        explosion.Play();
     }
 
     // Update is called once per frame

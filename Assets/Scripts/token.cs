@@ -67,7 +67,7 @@ public class Token : MonoBehaviour
 
     //Selects/Deselects tokens
     void OnMouseDown() {
-        if(Gameplay.level.chainReactions > 0 || tokensMoving > 0 || !Gameplay.level.allowSwaps) return;
+        if(!Gameplay.level.allowSwaps) return;
         
         // For the Explode Ability, needs to left-click on a token.
         if (AbilityExplode.abilityExplode.isSelected == true) {
@@ -84,6 +84,7 @@ public class Token : MonoBehaviour
                 }
             }
             // Explodes the tokens.
+            AbilityExplode.abilityExplode.PlayExplode();
             destroyTokens(explodingList);
             Gameplay.level.executeMatch();
             // Deactivates the Explode Ability.
@@ -116,9 +117,9 @@ public class Token : MonoBehaviour
         }
     }
 
-    //Return if a swap actually happens
+    //Returns if a swap occurs
     public bool SwapTokens(Token swappedToken){
-        //Return false if they are the same color or not adjacent, no need to swap
+        //Return if they are the same color or not adjacent, no need to swap
         if(token.type == swappedToken.type || 
             (Mathf.Abs(token.indexX - swappedToken.indexX) + Mathf.Abs(token.indexY - swappedToken.indexY) > 1)) {
                 lastSelected.Deselect();
