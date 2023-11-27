@@ -38,6 +38,7 @@ public class Gameplay : MonoBehaviour
     //Total tiles to break;
     public int tileCount = 0;
     public int tilesCleared = 0;
+    public TextMeshProUGUI tilesLeftText; 
 
     //Used when matches are made
     public int chainReactions = 0;
@@ -145,6 +146,7 @@ public class Gameplay : MonoBehaviour
                 tileCount++;
             }
         }
+        tilesLeftText.text = "" + (tileCount - tilesCleared);
     }
 
     void instantiateTokens(){
@@ -488,7 +490,7 @@ public class Gameplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        tilesLeftText.text = "" + (tileCount - tilesCleared);
         allowSwaps = !(chainReactions > 0 || Token.tokensMoving > 0);
 
         if (remainingTime > 0)
