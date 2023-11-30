@@ -58,6 +58,14 @@ public class Gameplay : MonoBehaviour
     public GameObject levelEndQuit;
     public GameObject levelEndContinue;
 
+    // SFX
+    public AudioSource match1;
+    public AudioSource match2;
+    public AudioSource match3;
+    public AudioSource match4;
+    public AudioSource match5;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -251,6 +259,22 @@ public class Gameplay : MonoBehaviour
         if(matchExists) {
             combo += 1;
             StartCoroutine(destroyAndReplace());
+            switch (combo) {
+                case 1:
+                    break; // this SFX is played in token.cs
+                case 2: 
+                    match2.Play();
+                    break;
+                case 3:
+                    match3.Play();
+                    break;
+                case 4:
+                    match4.Play();
+                    break; 
+                default:
+                    match5.Play();
+                    break;
+            }
         }
         else{
             combo = 1;
