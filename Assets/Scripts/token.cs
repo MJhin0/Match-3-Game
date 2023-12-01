@@ -108,6 +108,7 @@ public class Token : MonoBehaviour
         bool match2 = lastSelected.findMatch();
         if (match1 || match2) {
             lastSelected.Deselect();
+            Gameplay.level.match1.Play();
             Gameplay.level.executeMatch();
         }
         else {
