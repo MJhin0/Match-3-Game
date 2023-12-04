@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 20398868}
   - component: {fileID: 20398871}
   m_Layer: 5
-  m_Name: Home
+  m_Name: ok
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -269,7 +269,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a046cdaa0fd54a54b89474c4c6de22af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Background: []
 --- !u!1 &555449825
 GameObject:
   m_ObjectHideFlags: 0
@@ -653,7 +652,7 @@ GameObject:
   - component: {fileID: 1784955738}
   - component: {fileID: 1784955737}
   m_Layer: 5
-  m_Name: match
+  m_Name: image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
