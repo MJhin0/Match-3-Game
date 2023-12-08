@@ -9,7 +9,7 @@ public class Control : MonoBehaviour
 
     public void Home() {
         LevelMenu.ResetUnlocked();
-        SceneManager.LoadScene("LevelManager");
+        SceneManager.LoadScene("BeginScene");
     }
 
     void Start()
